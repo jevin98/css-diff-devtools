@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  padding: 16px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover>td.el-table__cell{
+  background-color: inherit !important;
+}
