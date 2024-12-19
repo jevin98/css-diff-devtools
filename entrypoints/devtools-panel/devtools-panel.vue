@@ -10,6 +10,7 @@ const {
   handleClearSelection,
   onTableCellClassName,
   onTableRowClassName,
+  handleCopyStyle,
 } = useDevToolsPanel()
 </script>
 
@@ -46,6 +47,7 @@ const {
       :data="renderCssDiffs"
       :cell-class-name="onTableCellClassName"
       :row-class-name="onTableRowClassName"
+      @cell-click="handleCopyStyle"
     >
       <ElTableColumn prop="property" :label="$t('property')" />
       <template v-for="(el) in selectedEl" :key="el.valueType">

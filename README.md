@@ -13,7 +13,8 @@ You need to download the zip file from my release and manually drag it into your
 
 ## Specific operations
 
-Select two elements in the Elements tab of the DevTools panel.
+- Select two elements in the Elements tab of the DevTools panel.
+- Click on different styles to automatically copy
 
 # Inspiration
 

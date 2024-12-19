@@ -1,7 +1,12 @@
 import type { CssDiffsType, SelectedElType } from '../types'
+import { useClipboard } from '@vueuse/core'
+import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import { formatStyle, type FormatStyleValue } from '../utils'
 
 export function useDevToolsPanel() {
+  const { t } = useI18n()
+
   const selectedEl: Array<SelectedElType> = reactive([])
   const cssDiffs: Array<CssDiffsType> = reactive([])
 
@@ -84,16 +89,45 @@ export function useDevToolsPanel() {
 
   function onTableCellClassName({ columnIndex }: { columnIndex: number }) {
     if (!columnIndex) {
-      return 'text-[var(--el-table-text-color)]'
+      return 'text-[var(--el-table-text-color)] cursor-auto'
     }
   }
 
   function onTableRowClassName({ row }: { row: CssDiffsType }) {
     if (row.isDiff) {
-      return '!bg-[#ffe6e6] text-[red]'
+      return '!bg-[#ffe6e6] text-[red] cursor-pointer'
     }
     else {
-      return '!bg-[#e6ffe6] text-[green]'
+      return '!bg-[#e6ffe6] text-[green] cursor-pointer'
+    }
+  }
+
+  function handleCopyStyle(row: CssDiffsType, column: any) {
+    if (column.property !== 'property') {
+      const source = `${row.property}: ${row[column.property as 'left' | 'right']};`
+
+      const { text, copied, copy } = useClipboard({
+        read: true,
+        source,
+        legacy: true,
+      })
+
+      copy(source)
+
+      watch(
+        () => copied.value,
+        (copied) => {
+          if (copied) {
+            ElMessage({
+              message: `${t('copyInfo')} > ${text.value}`,
+              type: 'success',
+            })
+          }
+        },
+        {
+          immediate: true,
+        },
+      )
     }
   }
 
@@ -104,5 +138,6 @@ export function useDevToolsPanel() {
     handleClearSelection,
     onTableCellClassName,
     onTableRowClassName,
+    handleCopyStyle,
   }
 }

@@ -6,6 +6,7 @@ export default {
     property: 'property',
     isAllProperty: 'Show all',
     tableColumnInfo: 'The header name is concatenated from the DOM\'s `TagName`, `Id`, and `Class` attributes using `$$`.',
+    copyInfo: 'Copy Success',
   },
 
   'zh-CN': {
@@ -15,5 +16,6 @@ export default {
     property: '属性名',
     isAllProperty: '显示全部',
     tableColumnInfo: '表头名称由DOM的 `TagName`、`Id`、`Class` 属性使用 `$$` 拼接而成。',
+    copyInfo: '复制成功',
   },
 }
