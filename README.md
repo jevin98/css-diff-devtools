@@ -2,7 +2,7 @@
 
 A browser extension that compares different CSS.
 
-![Screenshot](https://github.com/Jevin0/css-diff-devtools/blob/master/img/screenshot.png?raw=true)
+![Screenshot](https://github.com/Jevin0/css-diff-devtools/blob/main/img/screenshot.png?raw=true)
 
 # Usage
 
