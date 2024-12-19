@@ -1,7 +1,20 @@
-# WXT + Vue 3
+# CSS-Diff
 
-This template should help get you started developing with Vue 3 in WXT.
+A browser extension that compares different CSS.
 
-## Recommended IDE Setup
+![Screenshot](https://github.com/Jevin0/css-diff-devtools/blob/master/img/screenshot.png?raw=true)
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar).
+# Usage
+
+> [!WARNING]
+> This extension is not available in the extension store.
+
+You need to download the zip file from my release and manually drag it into your browser's extensions folder.
+
+## Specific operations
+
+Select two elements in the Elements tab of the DevTools panel.
+
+# Inspiration
+
++ https://github.com/kdzwinel/CSS-Diff
