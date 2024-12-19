@@ -1,116 +1,16 @@
 <script setup lang="ts">
 import { ElBacktop, ElButton, ElCheckbox, ElIcon, ElOption, ElSelect, ElTable, ElTableColumn, ElText, ElTooltip } from 'element-plus'
-import { computed, onMounted, reactive, ref } from 'vue'
-import { formatStyle, type FormatStyleValue } from './formatStyle'
+import { useDevToolsPanel } from './hooks/useDevToolsPanel'
+import { filterJoin } from './utils'
 
-type SelectedElType = {
-  valueType: 'left' | 'right'
-} & FormatStyleValue
-
-interface CssDiffsType {
-  property: string
-  left: string
-  right: string
-  isDiff: boolean
-}
-
-const selectedEl: Array<SelectedElType> = reactive([])
-const cssDiffs: Array<CssDiffsType> = reactive([])
-
-const isAllProperty = ref(false)
-const isLoadComplete = ref(false)
-
-onMounted(() => {
-  chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
-    chrome.devtools.inspectedWindow.eval(
-      `(() => document.readyState)($0)`,
-      (readyState: Document['readyState']) => {
-        if (readyState === 'complete') {
-          isLoadComplete.value = true
-        }
-        else {
-          isLoadComplete.value = false
-        }
-      },
-    )
-
-    chrome.devtools.inspectedWindow.eval(
-      `(${formatStyle.toString()})($0)`,
-      (result: FormatStyleValue, isException) => {
-        if (!isException && result != null && isLoadComplete.value) {
-          saveSelectedEl(result)
-        }
-      },
-    )
-  })
-})
-
-function saveSelectedEl(result: FormatStyleValue) {
-  if (selectedEl.length === 2)
-    return
-
-  const valueType = !selectedEl.length ? 'left' : 'right'
-  selectedEl.push({ ...result, valueType })
-
-  if (selectedEl.length === 2) {
-    compareSelectedEl()
-  }
-}
-
-function clearSelection() {
-  selectedEl.length = 0
-  cssDiffs.length = 0
-}
-
-function compareSelectedEl() {
-  const [{ style: styles1 = {} }, { style: styles2 = {} }] = selectedEl
-
-  const diffs: Array<CssDiffsType> = []
-
-  const allProperties = new Set([
-    ...Object.keys(styles1),
-    ...Object.keys(styles2),
-  ])
-
-  allProperties.forEach((property) => {
-    const left = styles1[property] || '未定义'
-    const right = styles2[property] || '未定义'
-
-    diffs.push({
-      property,
-      left,
-      right,
-      isDiff: left !== right,
-    })
-  })
-
-  cssDiffs.push(...diffs)
-}
-
-const renderCssDiffs = computed(() => {
-  return isAllProperty.value
-    ? cssDiffs
-    : cssDiffs.filter(css => css.isDiff)
-})
-
-function tableCellClassName({ columnIndex }: { columnIndex: number }) {
-  if (!columnIndex) {
-    return 'text-[var(--el-table-text-color)]'
-  }
-}
-
-function tableRowClassName({ row }: { row: CssDiffsType }) {
-  if (row.isDiff) {
-    return '!bg-[#ffe6e6] text-[red]'
-  }
-  else {
-    return '!bg-[#e6ffe6] text-[green]'
-  }
-}
-
-function filterJoin(...arg: Array<any>) {
-  return arg.filter(Boolean).join(' $$ ')
-}
+const {
+  selectedEl,
+  renderCssDiffs,
+  isAllProperty,
+  handleClearSelection,
+  onTableCellClassName,
+  onTableRowClassName,
+} = useDevToolsPanel()
 </script>
 
 <template>
@@ -129,7 +29,7 @@ function filterJoin(...arg: Array<any>) {
       {{ $t('info') }}
     </ElText>
 
-    <ElButton class="mt-[10px]" type="warning" plain @click="clearSelection">
+    <ElButton class="mt-[10px]" type="warning" plain @click="handleClearSelection">
       {{ $t('removeBtn') }}
     </ElButton>
 
@@ -144,8 +44,8 @@ function filterJoin(...arg: Array<any>) {
       class="w-full"
       border
       :data="renderCssDiffs"
-      :cell-class-name="tableCellClassName"
-      :row-class-name="tableRowClassName"
+      :cell-class-name="onTableCellClassName"
+      :row-class-name="onTableRowClassName"
     >
       <ElTableColumn prop="property" :label="$t('property')" />
       <template v-for="(el) in selectedEl" :key="el.valueType">
