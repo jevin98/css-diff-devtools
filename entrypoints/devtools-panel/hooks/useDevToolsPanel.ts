@@ -2,6 +2,7 @@ import type { CssDiffsType, SelectedElType } from '../types'
 import { useClipboard } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
+import SM from '../message'
 import { formatStyle, type FormatStyleValue } from '../utils'
 
 export function useDevToolsPanel() {
@@ -31,20 +32,40 @@ export function useDevToolsPanel() {
         `(${formatStyle.toString()})($0)`,
         (result: FormatStyleValue, isException) => {
           if (!isException && result != null && isLoadComplete.value) {
-            saveSelectedEl(result)
+            const valueType = !selectedEl.length ? 'left' : 'right'
+
+            saveSelectedEl({ ...result, valueType })
           }
         },
       )
     })
+
+    // Receive the <selected element> transmitted from the tab being operated
+    browser.runtime.onMessage.addListener((data: Array<SelectedElType>) => {
+      selectedEl.length = 0
+
+      if (!data.length) {
+        cssDiffs.length = 0
+        return
+      }
+
+      selectedEl.push(...data)
+
+      if (selectedEl.length === 2) {
+        compareSelectedEl()
+      }
+    })
   })
 
-  function saveSelectedEl(result: FormatStyleValue) {
+  function saveSelectedEl(result: SelectedElType) {
     if (selectedEl.length === 2) {
       return
     }
 
-    const valueType = !selectedEl.length ? 'left' : 'right'
-    selectedEl.push({ ...result, valueType })
+    selectedEl.push(result)
+
+    // Send selected data to other windows/tabs
+    SM.send(selectedEl)
 
     if (selectedEl.length === 2) {
       compareSelectedEl()
@@ -54,6 +75,9 @@ export function useDevToolsPanel() {
   function handleClearSelection() {
     selectedEl.length = 0
     cssDiffs.length = 0
+
+    // Send selected data to other windows/tabs
+    SM.send([])
   }
 
   function compareSelectedEl() {
