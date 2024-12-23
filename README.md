@@ -4,6 +4,11 @@ A browser extension that compares different CSS.
 
 ![Screenshot](https://github.com/Jevin0/css-diff-devtools/blob/main/img/screenshot.png?raw=true)
 
+# Support
+
+- Supports comparison of selected elements between different windows/tabs
+- Click on different styles to automatically copy
+
 # Usage
 
 > [!WARNING]
@@ -14,7 +19,6 @@ You need to download the zip file from my release and manually drag it into your
 ## Specific operations
 
 - Select two elements in the Elements tab of the DevTools panel.
-- Click on different styles to automatically copy
 
 # Inspiration
 
