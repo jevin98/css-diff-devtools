@@ -7,6 +7,7 @@ export default {
     isAllProperty: 'Show all',
     tableColumnInfo: 'The header name is concatenated from the DOM\'s `TagName`, `Id`, and `Class` attributes using `$$`.',
     copyInfo: 'Copy Success',
+    inputPlaceholder: 'Please enter the css property you want to view',
   },
 
   'zh-CN': {
@@ -17,5 +18,6 @@ export default {
     isAllProperty: '显示全部',
     tableColumnInfo: '表头名称由DOM的 `TagName`、`Id`、`Class` 属性使用 `$$` 拼接而成。',
     copyInfo: '复制成功',
+    inputPlaceholder: '请输入需要查看的css属性',
   },
 }
