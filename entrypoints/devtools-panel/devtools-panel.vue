@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ElBacktop, ElButton, ElCheckbox, ElIcon, ElOption, ElSelect, ElTable, ElTableColumn, ElText, ElTooltip } from 'element-plus'
+import { ElBacktop, ElButton, ElCheckbox, ElIcon, ElInput, ElOption, ElSelect, ElTable, ElTableColumn, ElText, ElTooltip } from 'element-plus'
+import { defineComponent, h } from 'vue'
 import { useDevToolsPanel } from './hooks/useDevToolsPanel'
 import { filterJoin } from './utils'
 
 const {
+  inputValue,
+
   selectedEl,
   renderCssDiffs,
   isAllProperty,
@@ -12,6 +15,28 @@ const {
   onTableRowClassName,
   handleCopyStyle,
 } = useDevToolsPanel()
+
+const PropertyNode = defineComponent({
+  props: {
+    text: {
+      type: String,
+    },
+  },
+  setup(props) {
+    return () => {
+      if (!inputValue.value) {
+        return h('div', props.text)
+      }
+      else {
+        const result = inputValue.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        const reg = new RegExp(`(${result})`, 'gi')
+
+        const text = props.text!.replace(reg, '<span class=\'text-[#409eff]\'>$1</span>')
+        return h('div', { innerHTML: text })
+      }
+    }
+  },
+})
 </script>
 
 <template>
@@ -38,7 +63,9 @@ const {
       {{ $t('selectedInfo') }}
     </ElText>
 
-    <div class="flex justify-end">
+    <div class="flex justify-between my-3">
+      <ElInput v-model="inputValue" :placeholder="$t('inputPlaceholder')" clearable class="!w-[50%]" />
+
       <ElCheckbox v-model="isAllProperty" :label="$t('isAllProperty')" />
     </div>
     <ElTable
@@ -49,7 +76,11 @@ const {
       :row-class-name="onTableRowClassName"
       @cell-click="handleCopyStyle"
     >
-      <ElTableColumn prop="property" :label="$t('property')" />
+      <ElTableColumn prop="property" :label="$t('property')">
+        <template #default="scope">
+          <PropertyNode :text="scope.row.property" />
+        </template>
+      </ElTableColumn>
       <template v-for="(el) in selectedEl" :key="el.valueType">
         <ElTableColumn :prop="el.valueType">
           <template #header>

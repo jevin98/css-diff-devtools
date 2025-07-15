@@ -7,6 +7,7 @@ import { formatStyle, type FormatStyleValue } from '../utils'
 
 export function useDevToolsPanel() {
   const { t } = useI18n()
+  const inputValue = ref('')
 
   const selectedEl: Array<SelectedElType> = reactive([])
   const cssDiffs: Array<CssDiffsType> = reactive([])
@@ -106,15 +107,19 @@ export function useDevToolsPanel() {
   }
 
   const renderCssDiffs = computed(() => {
-    return isAllProperty.value
+    return inputValueFilter(isAllProperty.value
       ? cssDiffs
-      : cssDiffs.filter(css => css.isDiff)
+      : cssDiffs.filter(css => css.isDiff), inputValue.value)
   })
 
+  function inputValueFilter(cssDiffs: Array<CssDiffsType>, inputValue: string) {
+    return !inputValue
+      ? cssDiffs
+      : cssDiffs.filter(c => c.property.includes(inputValue))
+  }
+
   function onTableCellClassName({ columnIndex }: { columnIndex: number }) {
-    if (!columnIndex) {
-      return 'text-[var(--el-table-text-color)] cursor-auto'
-    }
+    return !columnIndex ? 'text-[var(--el-table-text-color)] cursor-auto' : ''
   }
 
   function onTableRowClassName({ row }: { row: CssDiffsType }) {
@@ -156,6 +161,8 @@ export function useDevToolsPanel() {
   }
 
   return {
+    inputValue,
+
     selectedEl,
     renderCssDiffs,
     isAllProperty,
