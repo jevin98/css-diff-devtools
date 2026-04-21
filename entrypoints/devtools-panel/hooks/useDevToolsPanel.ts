@@ -8,6 +8,10 @@ import { formatStyle, type FormatStyleValue } from '../utils'
 export function useDevToolsPanel() {
   const { t } = useI18n()
   const inputValue = ref('')
+  const { copy } = useClipboard({
+    read: true,
+    legacy: true,
+  })
 
   const selectedEl: Array<SelectedElType> = reactive([])
   const cssDiffs: Array<CssDiffsType> = reactive([])
@@ -85,6 +89,7 @@ export function useDevToolsPanel() {
     const [{ style: styles1 = {} }, { style: styles2 = {} }] = selectedEl
 
     const diffs: Array<CssDiffsType> = []
+    cssDiffs.length = 0
 
     const allProperties = new Set([
       ...Object.keys(styles1),
@@ -134,29 +139,14 @@ export function useDevToolsPanel() {
   function handleCopyStyle(row: CssDiffsType, column: any) {
     if (column.property !== 'property') {
       const source = `${row.property}: ${row[column.property as 'left' | 'right']};`
-
-      const { text, copied, copy } = useClipboard({
-        read: true,
-        source,
-        legacy: true,
-      })
-
       copy(source)
-
-      watch(
-        () => copied.value,
-        (copied) => {
-          if (copied) {
-            ElMessage({
-              message: `${t('copyInfo')} > ${text.value}`,
-              type: 'success',
-            })
-          }
-        },
-        {
-          immediate: true,
-        },
-      )
+        .then(() => {
+          ElMessage({
+            message: `${t('copyInfo')} > ${source}`,
+            type: 'success',
+          })
+        })
+        .catch(() => null)
     }
   }
 
