@@ -94,7 +94,33 @@ const PropertyNode = defineComponent({
 <template>
   <TooltipProvider>
     <main class="relative min-h-[calc(100vh-32px)] space-y-3">
-      <header class="flex items-start justify-between gap-4 border-b border-border pb-3">
+      <div class="absolute right-0 top-0 flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          class="relative"
+          :aria-label="t('switchLanguage')"
+          :title="t('switchLanguage')"
+          @click="handleToggleLocale"
+        >
+          <Languages class="h-4 w-4" />
+          <span class="absolute -bottom-0.5 -right-0.5 rounded-sm bg-background px-0.5 text-[9px] font-semibold leading-none text-foreground ring-1 ring-border">
+            {{ localeLabel }}
+          </span>
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+          @click="handleToggleTheme"
+        >
+          <Sun v-if="isDark" class="h-4 w-4" />
+          <Moon v-else class="h-4 w-4" />
+        </Button>
+      </div>
+
+      <header class="border-b border-border pb-3 pr-24">
         <div class="min-w-0">
           <h1 class="text-lg font-semibold leading-none tracking-normal text-foreground">
             DOM Diff
@@ -102,37 +128,6 @@ const PropertyNode = defineComponent({
           <p class="mt-2 max-w-3xl text-xs leading-5 text-muted-foreground">
             {{ t('info') }}
           </p>
-        </div>
-
-        <div class="flex shrink-0 items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            class="relative"
-            :aria-label="t('switchLanguage')"
-            :title="t('switchLanguage')"
-            @click="handleToggleLocale"
-          >
-            <Languages class="h-4 w-4" />
-            <span class="absolute -bottom-0.5 -right-0.5 rounded-sm bg-background px-0.5 text-[9px] font-semibold leading-none text-foreground ring-1 ring-border">
-              {{ localeLabel }}
-            </span>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
-            @click="handleToggleTheme"
-          >
-            <Sun v-if="isDark" class="h-4 w-4" />
-            <Moon v-else class="h-4 w-4" />
-          </Button>
-
-          <Button variant="outline" size="sm" @click="handleClearSelection">
-            <Trash2 class="h-4 w-4" />
-            <span>{{ t('removeBtn') }}</span>
-          </Button>
         </div>
       </header>
 
@@ -163,6 +158,11 @@ const PropertyNode = defineComponent({
           <Checkbox id="show-all-properties" v-model:checked="isAllProperty" />
           <span>{{ t('isAllProperty') }}</span>
         </label>
+
+        <Button variant="outline" size="sm" @click="handleClearSelection">
+          <Trash2 class="h-4 w-4" />
+          <span>{{ t('removeBtn') }}</span>
+        </Button>
       </section>
 
       <section class="overflow-hidden rounded-md border border-border">
