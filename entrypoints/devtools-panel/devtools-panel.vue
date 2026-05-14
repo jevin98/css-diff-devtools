@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import type { SelectedElType } from './types'
 import type { Theme } from './utils/theme'
 import { ArrowUp, Copy, Info, Languages, Moon, Search, Sun, Trash2, X } from 'lucide-vue-next'
 import { computed, defineComponent, h, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
@@ -28,6 +28,7 @@ import { filterJoin, getDiffValueClass, getNextTheme, resolveLocale, resolveStor
 const {
   inputValue,
   selectedEl,
+  cssDiffs,
   renderCssDiffs,
   isAllProperty,
   handleClearSelection,
@@ -38,6 +39,19 @@ const theme = ref<Theme>('light')
 const isDark = computed(() => theme.value === 'dark')
 const tableColumnCount = computed(() => selectedEl.length + 1)
 const tableScrollContainer = ref<HTMLElement | null>(null)
+
+const sourceElement = computed(() => selectedEl.find(el => el.valueType === 'left'))
+const targetElement = computed(() => selectedEl.find(el => el.valueType === 'right'))
+const changedCount = computed(() => cssDiffs.filter(row => row.isDiff).length)
+const totalCount = computed(() => cssDiffs.length)
+const visibleCount = computed(() => renderCssDiffs.value.length)
+const isReady = computed(() => selectedEl.length === 2)
+const statusLabel = computed(() => isReady.value ? t('readyToCompare') : t('waitingSelection'))
+const filterModeLabel = computed(() => isAllProperty.value ? t('allProperties') : t('changedOnly'))
+const selectionSlots = computed(() => [
+  { element: sourceElement.value, index: '01', key: 'source', title: t('sourceElement') },
+  { element: targetElement.value, index: '02', key: 'target', title: t('targetElement') },
+])
 
 function applyTheme(value: Theme) {
   document.documentElement.classList.toggle('dark', value === 'dark')
@@ -58,6 +72,14 @@ function handleLocaleChange(value: string) {
 
 function handleScrollToTop() {
   scrollToTop(tableScrollContainer.value)
+}
+
+function getElementTitle(element?: SelectedElType) {
+  return element ? filterJoin(element.tag, element.id, element.class) || element.tag || t('emptyElement') : t('emptyElement')
+}
+
+function getElementValue(value?: string) {
+  return value || '-'
 }
 
 onMounted(() => {
@@ -83,7 +105,7 @@ const PropertyNode = defineComponent({
       const reg = new RegExp(`(${escapedInput})`, 'gi')
       const text = props.text.replace(
         reg,
-        '<span class="rounded bg-muted px-0.5 font-semibold text-foreground">$1</span>',
+        '<span class="rounded bg-background px-0.5 font-semibold text-foreground">$1</span>',
       )
 
       return h('span', { innerHTML: text })
@@ -93,165 +115,294 @@ const PropertyNode = defineComponent({
 </script>
 
 <template>
-  <main class="relative flex h-[calc(100vh-32px)] min-h-0 flex-col gap-3">
-    <div class="absolute right-0 top-0 flex items-center gap-2">
-      <Select
-        :model-value="activeLocale"
-        @update:model-value="handleLocaleChange"
-      >
-        <SelectTrigger
-          class="h-8 w-[124px] gap-1 px-2"
-          :aria-label="t('switchLanguage')"
-          :title="t('switchLanguage')"
+  <main class="flex h-[calc(100vh-32px)] min-h-0 flex-col bg-background text-foreground">
+    <header class="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border px-4">
+      <div class="flex min-w-0 items-center gap-3">
+        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-xs font-semibold">
+          DD
+        </div>
+        <div class="min-w-0">
+          <h1 class="truncate text-sm font-semibold leading-5 tracking-normal">
+            DOM Diff
+          </h1>
+          <div class="mt-0.5 flex min-w-0 items-center gap-2 text-[11px] text-muted-foreground">
+            <span
+              class="h-1.5 w-1.5 shrink-0 rounded-full"
+              :class="isReady ? 'bg-foreground' : 'bg-muted-foreground'"
+            />
+            <span class="truncate">{{ statusLabel }}</span>
+            <span class="text-border">/</span>
+            <span>{{ selectedEl.length }}/2</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex shrink-0 items-center gap-2">
+        <div class="hidden items-center gap-2 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground md:flex">
+          <span class="font-medium text-foreground">{{ changedCount }}</span>
+          <span>{{ t('changed') }}</span>
+          <span class="text-border">/</span>
+          <span>{{ totalCount }}</span>
+          <span>{{ t('total') }}</span>
+        </div>
+
+        <Select
+          :model-value="activeLocale"
+          @update:model-value="handleLocaleChange"
         >
-          <Languages class="h-4 w-4" />
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem
-            v-for="locale in SUPPORTED_LOCALES"
-            :key="locale.value"
-            :value="locale.value"
+          <SelectTrigger
+            class="h-8 w-[124px] gap-1 px-2"
+            :aria-label="t('switchLanguage')"
+            :title="t('switchLanguage')"
           >
-            {{ locale.label }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+            <Languages class="h-4 w-4" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              v-for="locale in SUPPORTED_LOCALES"
+              :key="locale.value"
+              :value="locale.value"
+            >
+              {{ locale.label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
-        @click="handleToggleTheme"
-      >
-        <Sun v-if="isDark" class="h-4 w-4" />
-        <Moon v-else class="h-4 w-4" />
-      </Button>
-    </div>
-
-    <header class="border-b border-border pb-3 pr-[176px]">
-      <div class="min-w-0">
-        <h1 class="text-lg font-semibold leading-none tracking-normal text-foreground">
-          DOM Diff
-        </h1>
-        <p class="mt-2 max-w-3xl text-xs leading-5 text-muted-foreground">
-          {{ t('info') }}
-        </p>
+        <Button
+          variant="ghost"
+          size="icon"
+          :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+          @click="handleToggleTheme"
+        >
+          <Sun v-if="isDark" class="h-4 w-4" />
+          <Moon v-else class="h-4 w-4" />
+        </Button>
       </div>
     </header>
 
-    <section class="flex flex-wrap items-center justify-between gap-3">
-      <div class="relative min-w-[260px] flex-1">
-        <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          v-model="inputValue"
-          class="h-9 pl-9 pr-9"
-          :placeholder="t('inputPlaceholder')"
-        />
-        <Button
-          v-if="inputValue"
-          variant="ghost"
-          size="icon"
-          class="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
-          aria-label="Clear filter"
-          @click="inputValue = ''"
-        >
-          <X class="h-4 w-4" />
-        </Button>
-      </div>
+    <section class="flex min-h-0 flex-1 flex-col gap-3 p-3 xl:flex-row">
+      <aside class="grid shrink-0 grid-cols-1 gap-3 xl:w-[320px] xl:grid-rows-[auto_auto_minmax(0,1fr)]">
+        <section class="rounded-md border border-border bg-background">
+          <div class="flex items-center justify-between border-b border-border px-3 py-2">
+            <div>
+              <h2 class="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
+                {{ t('selection') }}
+              </h2>
+            </div>
+            <Button variant="ghost" size="sm" class="h-7 px-2" @click="handleClearSelection">
+              <Trash2 class="h-3.5 w-3.5" />
+              <span>{{ t('removeBtn') }}</span>
+            </Button>
+          </div>
 
-      <label
-        class="flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-md border border-border px-3 text-sm text-foreground"
-        for="show-all-properties"
-      >
-        <Checkbox id="show-all-properties" v-model:checked="isAllProperty" />
-        <span>{{ t('isAllProperty') }}</span>
-      </label>
-
-      <Button variant="outline" size="sm" @click="handleClearSelection">
-        <Trash2 class="h-4 w-4" />
-        <span>{{ t('removeBtn') }}</span>
-      </Button>
-    </section>
-
-    <section class="min-h-0 flex-1 overflow-hidden rounded-md border border-border">
-      <div ref="tableScrollContainer" class="css-diff-scrollbar h-full overflow-auto">
-        <table class="w-full min-w-[760px] border-collapse text-left text-xs">
-          <thead class="sticky top-0 z-10 bg-muted text-muted-foreground">
-            <tr class="border-b border-border">
-              <th class="w-[220px] px-3 py-2 font-medium">
-                {{ t('property') }}
-              </th>
-              <th
-                v-for="el in selectedEl"
-                :key="el.valueType"
-                class="min-w-[240px] border-l border-border px-3 py-2 font-medium"
-              >
-                <div class="flex items-center gap-1.5">
-                  <span class="truncate">{{ filterJoin(el.tag, el.id, el.class) }}</span>
-                  <Popover>
-                    <PopoverTrigger as-child>
-                      <button
-                        type="button"
-                        class="inline-flex h-5 w-5 items-center justify-center rounded-sm text-muted-foreground transition hover:bg-background hover:text-foreground"
-                        :aria-label="t('tableColumnInfo')"
-                      >
-                        <Info class="h-3.5 w-3.5" />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent align="start" side="top">
-                      {{ t('tableColumnInfo') }}
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr v-if="!renderCssDiffs.length">
-              <td
-                :colspan="tableColumnCount"
-                class="px-3 py-8 text-center text-sm text-muted-foreground"
-              >
-                {{ t('selectedInfo') }}
-              </td>
-            </tr>
-
-            <tr
-              v-for="row in renderCssDiffs"
-              :key="row.property"
-              class="border-b border-border transition-colors last:border-b-0"
-              :class="row.isDiff
-                ? 'bg-muted/50 text-foreground'
-                : 'bg-background text-muted-foreground'"
+          <div class="grid gap-2 p-2">
+            <div
+              v-for="slot in selectionSlots"
+              :key="slot.key"
+              class="min-w-0 overflow-hidden rounded-md border border-border bg-muted/40 p-3"
+              :class="slot.element ? 'text-foreground' : 'text-muted-foreground'"
             >
-              <td class="w-[220px] px-3 py-2 align-top font-semibold text-foreground">
-                <div class="flex items-start">
-                  <PropertyNode :text="row.property" />
-                </div>
-              </td>
-              <td
-                v-for="el in selectedEl"
-                :key="`${row.property}-${el.valueType}`"
-                class="group min-w-[240px] cursor-copy border-l border-border px-3 py-2 align-top transition-colors hover:bg-accent hover:text-accent-foreground"
-                :class="row.isDiff ? 'bg-muted/30 font-medium text-foreground' : ''"
-                @click="handleCopyStyle(row, el.valueType)"
+              <div class="mb-2 flex items-center justify-between gap-2">
+                <span class="text-[10px] font-semibold uppercase tracking-normal text-muted-foreground">
+                  {{ slot.index }} / {{ slot.title }}
+                </span>
+                <span
+                  class="rounded-full border px-2 py-0.5 text-[10px] font-medium"
+                  :class="slot.element ? 'border-foreground text-foreground' : 'border-border text-muted-foreground'"
+                >
+                  {{ slot.element?.tag || '-' }}
+                </span>
+              </div>
+              <div class="block max-w-full truncate text-sm font-semibold">
+                {{ getElementTitle(slot.element) }}
+              </div>
+              <div class="mt-2 grid grid-cols-[44px_minmax(0,1fr)] gap-x-2 gap-y-1 text-[11px]">
+                <span class="text-muted-foreground">{{ t('idName') }}</span>
+                <span class="truncate">{{ getElementValue(slot.element?.id) }}</span>
+                <span class="text-muted-foreground">{{ t('className') }}</span>
+                <span class="truncate">{{ getElementValue(slot.element?.class) }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-md border border-border bg-background p-3">
+          <div class="mb-2 flex items-center justify-between gap-2">
+            <h2 class="text-xs font-semibold uppercase tracking-normal text-muted-foreground">
+              {{ t('filter') }}
+            </h2>
+            <Button
+              variant="outline"
+              size="sm"
+              class="h-7 px-2 text-xs"
+              :aria-pressed="isAllProperty"
+              @click="isAllProperty = !isAllProperty"
+            >
+              {{ filterModeLabel }}
+            </Button>
+          </div>
+
+          <div class="relative">
+            <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              v-model="inputValue"
+              class="h-9 pl-9 pr-9"
+              :placeholder="t('inputPlaceholder')"
+            />
+            <Button
+              v-if="inputValue"
+              variant="ghost"
+              size="icon"
+              class="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
+              aria-label="Clear filter"
+              @click="inputValue = ''"
+            >
+              <X class="h-4 w-4" />
+            </Button>
+          </div>
+        </section>
+
+        <section class="hidden min-h-0 rounded-md border border-border bg-muted/30 p-3 text-xs text-muted-foreground xl:block">
+          <div class="flex items-center justify-between">
+            <span>{{ t('diffs') }}</span>
+            <span class="font-medium text-foreground">{{ visibleCount }}</span>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span>{{ t('changed') }}</span>
+            <span class="font-medium text-foreground">{{ changedCount }}</span>
+          </div>
+        </section>
+      </aside>
+
+      <section class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-border bg-background">
+        <div class="flex h-11 shrink-0 items-center justify-between gap-3 border-b border-border px-3">
+          <div class="min-w-0">
+            <h2 class="truncate text-sm font-semibold">
+              {{ t('diffs') }}
+            </h2>
+            <p class="text-[11px] text-muted-foreground">
+              {{ visibleCount }} {{ t('property') }}
+            </p>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-muted-foreground">
+            <span class="rounded-md border border-border px-2 py-1">
+              {{ changedCount }} {{ t('changed') }}
+            </span>
+            <span class="rounded-md border border-border px-2 py-1">
+              {{ totalCount }} {{ t('total') }}
+            </span>
+          </div>
+        </div>
+
+        <div ref="tableScrollContainer" class="css-diff-scrollbar min-h-0 flex-1 overflow-auto">
+          <table class="w-full min-w-[860px] border-collapse text-left text-xs">
+            <thead class="sticky top-0 z-10 border-b border-border bg-muted/80 text-muted-foreground backdrop-blur">
+              <tr>
+                <th class="w-[240px] px-3 py-2 font-medium">
+                  {{ t('property') }}
+                </th>
+                <th
+                  v-for="slot in selectionSlots"
+                  :key="slot.key"
+                  class="min-w-[280px] border-l border-border px-3 py-2 font-medium"
+                >
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                      <div class="text-[10px] uppercase tracking-normal text-muted-foreground">
+                        {{ slot.title }}
+                      </div>
+                      <div class="truncate text-xs font-semibold text-foreground">
+                        {{ getElementTitle(slot.element) }}
+                      </div>
+                    </div>
+                    <Popover>
+                      <PopoverTrigger as-child>
+                        <button
+                          type="button"
+                          class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-background hover:text-foreground"
+                          :aria-label="t('elementDetails')"
+                        >
+                          <Info class="h-3.5 w-3.5" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent align="end" side="bottom">
+                        <div class="mb-2 font-semibold text-foreground">
+                          {{ t('elementDetails') }}
+                        </div>
+                        <dl class="grid grid-cols-[44px_minmax(0,1fr)] gap-x-2 gap-y-1">
+                          <dt class="text-muted-foreground">
+                            {{ t('tagName') }}
+                          </dt>
+                          <dd class="truncate">
+                            {{ getElementValue(slot.element?.tag) }}
+                          </dd>
+                          <dt class="text-muted-foreground">
+                            {{ t('idName') }}
+                          </dt>
+                          <dd class="truncate">
+                            {{ getElementValue(slot.element?.id) }}
+                          </dd>
+                          <dt class="text-muted-foreground">
+                            {{ t('className') }}
+                          </dt>
+                          <dd class="break-all">
+                            {{ getElementValue(slot.element?.class) }}
+                          </dd>
+                        </dl>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr v-if="!renderCssDiffs.length">
+                <td
+                  :colspan="tableColumnCount"
+                  class="px-3 py-12 text-center text-sm text-muted-foreground"
+                >
+                  {{ t('selectedInfo') }}
+                </td>
+              </tr>
+
+              <tr
+                v-for="row in renderCssDiffs"
+                :key="row.property"
+                class="border-b border-border transition-colors last:border-b-0"
+                :class="row.isDiff
+                  ? 'bg-muted/50 text-foreground'
+                  : 'bg-background text-muted-foreground'"
               >
-                <div class="flex items-start justify-between gap-3">
-                  <span
-                    class="break-all rounded-sm border px-2 py-1 leading-none"
-                    :class="getDiffValueClass(row, el.valueType)"
-                  >
-                    {{ row[el.valueType] }}
-                  </span>
-                  <Copy class="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                <td class="w-[240px] px-3 py-2 align-top font-semibold text-foreground">
+                  <PropertyNode :text="row.property" />
+                </td>
+                <td
+                  v-for="slot in selectionSlots"
+                  :key="`${row.property}-${slot.key}`"
+                  class="group min-w-[280px] cursor-copy border-l border-border px-3 py-2 align-top transition-colors hover:bg-accent hover:text-accent-foreground"
+                  :class="row.isDiff ? 'bg-muted/30 font-medium text-foreground' : ''"
+                  @click="slot.element && handleCopyStyle(row, slot.element.valueType)"
+                >
+                  <div class="flex items-start justify-between gap-3">
+                    <span
+                      class="break-all rounded-sm border px-2 py-1 leading-none"
+                      :class="slot.element ? getDiffValueClass(row, slot.element.valueType) : 'border-border bg-background text-muted-foreground'"
+                    >
+                      {{ slot.element ? row[slot.element.valueType] : '-' }}
+                    </span>
+                    <Copy
+                      v-if="slot.element"
+                      class="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </section>
 
     <Button

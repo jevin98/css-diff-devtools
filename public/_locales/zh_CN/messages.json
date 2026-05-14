@@ -8,6 +8,54 @@
   "switchLanguage": {
     "message": "切换语言"
   },
+  "selection": {
+    "message": "选择"
+  },
+  "sourceElement": {
+    "message": "源元素"
+  },
+  "targetElement": {
+    "message": "目标元素"
+  },
+  "emptyElement": {
+    "message": "未选择元素"
+  },
+  "waitingSelection": {
+    "message": "等待选择"
+  },
+  "readyToCompare": {
+    "message": "可以比较"
+  },
+  "diffs": {
+    "message": "差异"
+  },
+  "changed": {
+    "message": "变更"
+  },
+  "total": {
+    "message": "总数"
+  },
+  "filter": {
+    "message": "筛选"
+  },
+  "changedOnly": {
+    "message": "仅差异"
+  },
+  "allProperties": {
+    "message": "全部属性"
+  },
+  "elementDetails": {
+    "message": "元素详情"
+  },
+  "tagName": {
+    "message": "标签"
+  },
+  "idName": {
+    "message": "ID"
+  },
+  "className": {
+    "message": "Class"
+  },
   "info": {
     "message": "在 DevTools 面板的 Elements 选项卡中选择两个元素，样式差异将显示在下面。"
   },

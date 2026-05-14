@@ -8,6 +8,54 @@
   "switchLanguage": {
     "message": "Switch language"
   },
+  "selection": {
+    "message": "Selection"
+  },
+  "sourceElement": {
+    "message": "Source"
+  },
+  "targetElement": {
+    "message": "Target"
+  },
+  "emptyElement": {
+    "message": "No element selected"
+  },
+  "waitingSelection": {
+    "message": "Waiting for selection"
+  },
+  "readyToCompare": {
+    "message": "Ready to compare"
+  },
+  "diffs": {
+    "message": "Diffs"
+  },
+  "changed": {
+    "message": "Changed"
+  },
+  "total": {
+    "message": "Total"
+  },
+  "filter": {
+    "message": "Filter"
+  },
+  "changedOnly": {
+    "message": "Changed only"
+  },
+  "allProperties": {
+    "message": "All properties"
+  },
+  "elementDetails": {
+    "message": "Element details"
+  },
+  "tagName": {
+    "message": "Tag"
+  },
+  "idName": {
+    "message": "ID"
+  },
+  "className": {
+    "message": "Class"
+  },
   "info": {
     "message": "Select two elements in the Elements tab of the DevTools panel and the style differences will be shown below."
   },

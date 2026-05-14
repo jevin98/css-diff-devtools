@@ -111,6 +111,7 @@ export function useDevToolsPanel() {
     inputValue,
 
     selectedEl,
+    cssDiffs,
     renderCssDiffs,
     isAllProperty,
     handleClearSelection,

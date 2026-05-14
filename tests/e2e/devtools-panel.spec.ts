@@ -61,13 +61,29 @@ async function serveOutputDir() {
 async function mockExtensionApi(page: Page) {
   await page.addInitScript(() => {
     const messages: Record<string, string> = {
+      allProperties: 'All properties',
+      changed: 'Changed',
+      changedOnly: 'Changed only',
+      className: 'Class',
+      diffs: 'Diffs',
+      elementDetails: 'Element details',
+      emptyElement: 'No element selected',
+      filter: 'Filter',
+      idName: 'ID',
       info: 'Select two elements in the Elements tab of the DevTools panel and the style differences will be shown below.',
       inputPlaceholder: 'Please enter the css property you want to view',
       isAllProperty: 'Show all',
       property: 'property',
+      readyToCompare: 'Ready to compare',
       removeBtn: 'Clear Selection',
       selectedInfo: 'Please select two elements to compare.',
+      selection: 'Selection',
+      sourceElement: 'Source',
       tableColumnInfo: 'The header name is concatenated from the DOM\'s `TagName`, `Id`, and `Class` attributes using `$$$$`.',
+      tagName: 'Tag',
+      targetElement: 'Target',
+      total: 'Total',
+      waitingSelection: 'Waiting for selection',
     }
     const runtimeMessageListeners: Array<(data: unknown) => void> = []
 
@@ -124,7 +140,8 @@ test('renders the built DevTools panel shell', async ({ page }) => {
     await page.goto(server.url)
 
     await expect(page.getByRole('heading', { name: 'DOM Diff' })).toBeVisible()
-    await expect(page.getByText('Select two elements in the Elements tab')).toBeVisible()
+    await expect(page.getByText('Waiting for selection')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Selection' })).toBeVisible()
     await expect(page.getByText('Please select two elements to compare.')).toBeVisible()
   }
   finally {
@@ -162,13 +179,15 @@ test('opens the selected element header info popover on click', async ({ page })
         .forEach(callback => callback(selected))
     })
 
-    const infoTrigger = page.getByRole('button', {
-      name: 'The header name is concatenated from the DOM\'s `TagName`, `Id`, and `Class` attributes using `$$`.',
-    }).first()
+    const infoTriggers = page.getByRole('button', { name: 'Element details' })
 
-    await infoTrigger.click()
+    await expect(infoTriggers).toHaveCount(2)
+    await infoTriggers.nth(0).click()
 
-    await expect(page.getByText('The header name is concatenated from the DOM')).toBeVisible()
+    const detailsDialog = page.getByRole('dialog')
+
+    await expect(detailsDialog.getByText('Element details')).toBeVisible()
+    await expect(detailsDialog.getByText('nav-link', { exact: true })).toBeVisible()
   }
   finally {
     await server.close()
