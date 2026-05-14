@@ -5,6 +5,13 @@ import { computed, defineComponent, h, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Toaster } from '@/components/ui/sonner'
 import {
   Tooltip,
@@ -15,13 +22,13 @@ import {
 import { useDevToolsPanel } from './hooks/useDevToolsPanel'
 import {
   activeLocale,
-  getNextLocale,
   initializeLocale,
   LOCALE_STORAGE_KEY,
   setLocale,
+  SUPPORTED_LOCALES,
   t,
 } from './lang'
-import { filterJoin, getDiffValueClass, getNextTheme, resolveStoredTheme, scrollToTop, THEME_STORAGE_KEY } from './utils'
+import { filterJoin, getDiffValueClass, getNextTheme, resolveLocale, resolveStoredTheme, scrollToTop, THEME_STORAGE_KEY } from './utils'
 
 const {
   inputValue,
@@ -35,7 +42,6 @@ const {
 const theme = ref<Theme>('light')
 const isDark = computed(() => theme.value === 'dark')
 const tableColumnCount = computed(() => selectedEl.length + 1)
-const localeLabel = computed(() => activeLocale.value === 'zh_CN' ? '中' : 'EN')
 const tableScrollContainer = ref<HTMLElement | null>(null)
 
 function applyTheme(value: Theme) {
@@ -48,11 +54,11 @@ function handleToggleTheme() {
   localStorage.setItem(THEME_STORAGE_KEY, theme.value)
 }
 
-function handleToggleLocale() {
-  const nextLocale = getNextLocale(activeLocale.value)
+function handleLocaleChange(value: string) {
+  const locale = resolveLocale(value)
 
-  setLocale(nextLocale)
-  localStorage.setItem(LOCALE_STORAGE_KEY, nextLocale)
+  setLocale(locale)
+  localStorage.setItem(LOCALE_STORAGE_KEY, locale)
 }
 
 function handleScrollToTop() {
@@ -94,20 +100,29 @@ const PropertyNode = defineComponent({
 <template>
   <TooltipProvider>
     <main class="relative min-h-[calc(100vh-32px)] space-y-3">
-      <div class="absolute right-0 top-0 flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          class="relative"
-          :aria-label="t('switchLanguage')"
-          :title="t('switchLanguage')"
-          @click="handleToggleLocale"
+      <div class="absolute right-0 top-0 flex items-center gap-2">
+        <Select
+          :model-value="activeLocale"
+          @update:model-value="handleLocaleChange"
         >
-          <Languages class="h-4 w-4" />
-          <span class="absolute -bottom-0.5 -right-0.5 rounded-sm bg-background px-0.5 text-[9px] font-semibold leading-none text-foreground ring-1 ring-border">
-            {{ localeLabel }}
-          </span>
-        </Button>
+          <SelectTrigger
+            class="h-8 w-[124px] gap-1 px-2"
+            :aria-label="t('switchLanguage')"
+            :title="t('switchLanguage')"
+          >
+            <Languages class="h-4 w-4" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem
+              v-for="locale in SUPPORTED_LOCALES"
+              :key="locale.value"
+              :value="locale.value"
+            >
+              {{ locale.label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
 
         <Button
           variant="ghost"
@@ -120,7 +135,7 @@ const PropertyNode = defineComponent({
         </Button>
       </div>
 
-      <header class="border-b border-border pb-3 pr-24">
+      <header class="border-b border-border pb-3 pr-[176px]">
         <div class="min-w-0">
           <h1 class="text-lg font-semibold leading-none tracking-normal text-foreground">
             DOM Diff

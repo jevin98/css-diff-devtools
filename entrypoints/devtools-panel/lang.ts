@@ -36,5 +36,5 @@ export function t(key: MessageKey, substitutions?: string | string[]) {
   return formatLocaleMessage(message, substitutions)
 }
 
-export { getNextLocale, LOCALE_STORAGE_KEY } from './utils/locale'
+export { LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from './utils/locale'
 export type { Locale } from './utils/locale'
