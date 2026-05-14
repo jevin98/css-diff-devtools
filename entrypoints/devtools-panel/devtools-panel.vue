@@ -21,7 +21,7 @@ import {
   setLocale,
   t,
 } from './lang'
-import { filterJoin, getDiffValueClass, getNextTheme, resolveStoredTheme, THEME_STORAGE_KEY } from './utils'
+import { filterJoin, getDiffValueClass, getNextTheme, resolveStoredTheme, scrollToTop, THEME_STORAGE_KEY } from './utils'
 
 const {
   inputValue,
@@ -36,6 +36,7 @@ const theme = ref<Theme>('light')
 const isDark = computed(() => theme.value === 'dark')
 const tableColumnCount = computed(() => selectedEl.length + 1)
 const localeLabel = computed(() => activeLocale.value === 'zh_CN' ? '中' : 'EN')
+const tableScrollContainer = ref<HTMLElement | null>(null)
 
 function applyTheme(value: Theme) {
   document.documentElement.classList.toggle('dark', value === 'dark')
@@ -55,7 +56,7 @@ function handleToggleLocale() {
 }
 
 function handleScrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  scrollToTop(tableScrollContainer.value)
 }
 
 onMounted(() => {
@@ -165,7 +166,7 @@ const PropertyNode = defineComponent({
       </section>
 
       <section class="overflow-hidden rounded-md border border-border">
-        <div class="css-diff-scrollbar max-h-[calc(100vh-150px)] overflow-auto">
+        <div ref="tableScrollContainer" class="css-diff-scrollbar max-h-[calc(100vh-150px)] overflow-auto">
           <table class="w-full min-w-[760px] border-collapse text-left text-xs">
             <thead class="sticky top-0 z-10 bg-muted text-muted-foreground">
               <tr class="border-b border-border">
