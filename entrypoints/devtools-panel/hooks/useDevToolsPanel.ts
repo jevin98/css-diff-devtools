@@ -3,7 +3,7 @@ import { useClipboard } from '@vueuse/core'
 import { toast } from 'vue-sonner'
 import { t } from '../lang'
 import SM from '../message'
-import { formatStyle, type FormatStyleValue, UNDEFINED_STYLE_VALUE } from '../utils'
+import { compareStyles, formatStyle, type FormatStyleValue, getVisibleCssDiffs } from '../utils'
 
 export function useDevToolsPanel() {
   const inputValue = ref('')
@@ -83,39 +83,16 @@ export function useDevToolsPanel() {
   function compareSelectedEl() {
     const [{ style: styles1 = {} }, { style: styles2 = {} }] = selectedEl
 
-    const diffs: Array<CssDiffsType> = []
-
-    const allProperties = new Set([
-      ...Object.keys(styles1),
-      ...Object.keys(styles2),
-    ])
-
-    allProperties.forEach((property) => {
-      const left = styles1[property] || UNDEFINED_STYLE_VALUE
-      const right = styles2[property] || UNDEFINED_STYLE_VALUE
-
-      diffs.push({
-        property,
-        left,
-        right,
-        isDiff: left !== right,
-      })
-    })
-
-    cssDiffs.push(...diffs)
+    cssDiffs.length = 0
+    cssDiffs.push(...compareStyles(styles1, styles2))
   }
 
   const renderCssDiffs = computed(() => {
-    return inputValueFilter(isAllProperty.value
-      ? cssDiffs
-      : cssDiffs.filter(css => css.isDiff), inputValue.value)
+    return getVisibleCssDiffs(cssDiffs, {
+      isAllProperty: isAllProperty.value,
+      inputValue: inputValue.value,
+    })
   })
-
-  function inputValueFilter(cssDiffs: Array<CssDiffsType>, inputValue: string) {
-    return !inputValue
-      ? cssDiffs
-      : cssDiffs.filter(c => c.property.includes(inputValue))
-  }
 
   async function handleCopyStyle(row: CssDiffsType, valueType: 'left' | 'right') {
     const source = `${row.property}: ${row[valueType]};`

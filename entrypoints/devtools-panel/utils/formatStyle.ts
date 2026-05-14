@@ -2,22 +2,24 @@ export interface FormatStyleValue {
   tag: string
   id?: string
   class?: string
-  style?: Record<string, any>
+  style?: Record<string, string>
 }
 
-export function formatStyle(element: Element): FormatStyleValue | null {
+export function formatStyle(element: Element | null): FormatStyleValue | null {
   if (!element) {
     return null
   }
 
   const styles = (element as Node)?.ownerDocument?.defaultView?.getComputedStyle(element)
-  const outValue: Record<string, any> = {}
+  const outValue: Record<string, string> = {}
 
   if (styles) {
-    for (let i = 0; i <= styles.length; i++) {
-      const StyleKey = styles[i]
-      const StyleValue = styles.getPropertyValue(StyleKey)
-      outValue[StyleKey] = StyleValue
+    for (let i = 0; i < styles.length; i++) {
+      const styleKey = styles[i]
+
+      if (styleKey) {
+        outValue[styleKey] = styles.getPropertyValue(styleKey)
+      }
     }
   }
 

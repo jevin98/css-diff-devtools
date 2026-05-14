@@ -80,6 +80,20 @@ Package extensions:
 pnpm zip
 ```
 
+## Testing
+
+This project uses Vitest for unit/component tests and Playwright for a built-panel smoke test.
+
+```sh
+pnpm test
+pnpm test:coverage
+pnpm test:e2e
+```
+
+- `pnpm test` runs fast Vitest tests for pure CSS diff utilities, DOM style formatting, and the Vue DevTools panel shell.
+- `pnpm test:coverage` generates local coverage output under `coverage/`.
+- `pnpm test:e2e` builds the Chrome extension first, then serves `.output/chrome-mv3` locally and verifies that the built DevTools panel renders.
+
 ## Tech Stack
 
 - [WXT](https://wxt.dev/) for browser extension development
