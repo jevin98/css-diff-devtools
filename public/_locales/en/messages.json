@@ -1,0 +1,32 @@
+{
+  "extName": {
+    "message": "CSS-Diff"
+  },
+  "extDescription": {
+    "message": "A browser extension that compares different CSS."
+  },
+  "info": {
+    "message": "Select two elements in the Elements tab of the DevTools panel and the style differences will be shown below."
+  },
+  "removeBtn": {
+    "message": "Clear Selection"
+  },
+  "selectedInfo": {
+    "message": "Please select two elements to compare."
+  },
+  "property": {
+    "message": "property"
+  },
+  "isAllProperty": {
+    "message": "Show all"
+  },
+  "tableColumnInfo": {
+    "message": "The header name is concatenated from the DOM's `TagName`, `Id`, and `Class` attributes using `$$$$`."
+  },
+  "copyInfo": {
+    "message": "Copy Success"
+  },
+  "inputPlaceholder": {
+    "message": "Please enter the css property you want to view"
+  }
+}

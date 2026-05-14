@@ -1,0 +1,32 @@
+{
+  "extName": {
+    "message": "CSS-Diff"
+  },
+  "extDescription": {
+    "message": "一个用于比较 CSS 差异的浏览器扩展。"
+  },
+  "info": {
+    "message": "在 DevTools 面板的 Elements 选项卡中选择两个元素，样式差异将显示在下面。"
+  },
+  "removeBtn": {
+    "message": "清除选择"
+  },
+  "selectedInfo": {
+    "message": "请选择两个元素进行比较。"
+  },
+  "property": {
+    "message": "属性名"
+  },
+  "isAllProperty": {
+    "message": "显示全部"
+  },
+  "tableColumnInfo": {
+    "message": "表头名称由 DOM 的 `TagName`、`Id`、`Class` 属性使用 `$$$$` 拼接而成。"
+  },
+  "copyInfo": {
+    "message": "复制成功"
+  },
+  "inputPlaceholder": {
+    "message": "请输入需要查看的 css 属性"
+  }
+}
