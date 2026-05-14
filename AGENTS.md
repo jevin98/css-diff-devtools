@@ -27,7 +27,7 @@ Guidance for coding agents working in this repository.
 - `entrypoints/devtools-panel/lang.ts`: typed wrapper around `browser.i18n.getMessage`.
 - `public/_locales/en/messages.json`: English extension and panel messages.
 - `public/_locales/zh_CN/messages.json`: Simplified Chinese extension and panel messages.
-- `assets/main.css`: Tailwind layers and small global Element Plus table overrides.
+- `assets/main.css`: Tailwind CSS v4 import and small global Element Plus table overrides.
 - `public/icon/`: extension icons.
 - `.github/renovate.json5`: dependency update policy.
 
