@@ -73,6 +73,10 @@ There is no dedicated `lint` or `format` script in `package.json`; use ESLint di
 - Use Tailwind utility classes for layout and small style adjustments.
 - The existing code relies on WXT/browser extension globals such as `browser`; do not replace them with unrelated APIs without a compatibility reason.
 
+## README Documentation
+
+- 生成 README 时，需要保持各语种 README 都包含并同步更新。
+
 ## Extension Behavior Notes
 
 - The DevTools sidebar is created with `browser.devtools.panels.elements.createSidebarPane`.
