@@ -3,7 +3,7 @@ import { useClipboard } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
 import { t } from '../lang'
 import SM from '../message'
-import { formatStyle, type FormatStyleValue } from '../utils'
+import { compareStyles, formatStyle, type FormatStyleValue, getVisibleCssDiffs } from '../utils'
 
 export function useDevToolsPanel() {
   const inputValue = ref('')
@@ -83,39 +83,16 @@ export function useDevToolsPanel() {
   function compareSelectedEl() {
     const [{ style: styles1 = {} }, { style: styles2 = {} }] = selectedEl
 
-    const diffs: Array<CssDiffsType> = []
-
-    const allProperties = new Set([
-      ...Object.keys(styles1),
-      ...Object.keys(styles2),
-    ])
-
-    allProperties.forEach((property) => {
-      const left = styles1[property] || '未定义'
-      const right = styles2[property] || '未定义'
-
-      diffs.push({
-        property,
-        left,
-        right,
-        isDiff: left !== right,
-      })
-    })
-
-    cssDiffs.push(...diffs)
+    cssDiffs.length = 0
+    cssDiffs.push(...compareStyles(styles1, styles2))
   }
 
   const renderCssDiffs = computed(() => {
-    return inputValueFilter(isAllProperty.value
-      ? cssDiffs
-      : cssDiffs.filter(css => css.isDiff), inputValue.value)
+    return getVisibleCssDiffs(cssDiffs, {
+      isAllProperty: isAllProperty.value,
+      inputValue: inputValue.value,
+    })
   })
-
-  function inputValueFilter(cssDiffs: Array<CssDiffsType>, inputValue: string) {
-    return !inputValue
-      ? cssDiffs
-      : cssDiffs.filter(c => c.property.includes(inputValue))
-  }
 
   function onTableCellClassName({ columnIndex }: { columnIndex: number }) {
     return !columnIndex ? 'text-[var(--el-table-text-color)] cursor-auto' : ''

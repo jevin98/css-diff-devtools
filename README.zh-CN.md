@@ -80,6 +80,20 @@ pnpm build:edge
 pnpm zip
 ```
 
+## 测试
+
+本项目使用 Vitest 进行单元/组件测试，并使用 Playwright 对构建后的面板做冒烟测试。
+
+```sh
+pnpm test
+pnpm test:coverage
+pnpm test:e2e
+```
+
+- `pnpm test` 会运行快速 Vitest 测试，覆盖 CSS diff 纯工具、DOM 样式格式化和 Vue DevTools 面板外壳。
+- `pnpm test:coverage` 会在本地 `coverage/` 目录下生成覆盖率报告。
+- `pnpm test:e2e` 会先构建 Chrome 扩展，然后在本地服务 `.output/chrome-mv3` 并验证构建后的 DevTools 面板可以正常渲染。
+
 ## 技术栈
 
 - [WXT](https://wxt.dev/) 用于浏览器扩展开发
