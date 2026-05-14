@@ -99,7 +99,7 @@ const PropertyNode = defineComponent({
 
 <template>
   <TooltipProvider>
-    <main class="relative min-h-[calc(100vh-32px)] space-y-3">
+    <main class="relative flex h-[calc(100vh-32px)] min-h-0 flex-col gap-3">
       <div class="absolute right-0 top-0 flex items-center gap-2">
         <Select
           :model-value="activeLocale"
@@ -180,8 +180,8 @@ const PropertyNode = defineComponent({
         </Button>
       </section>
 
-      <section class="overflow-hidden rounded-md border border-border">
-        <div ref="tableScrollContainer" class="css-diff-scrollbar max-h-[calc(100vh-150px)] overflow-auto">
+      <section class="min-h-0 flex-1 overflow-hidden rounded-md border border-border">
+        <div ref="tableScrollContainer" class="css-diff-scrollbar h-full overflow-auto">
           <table class="w-full min-w-[760px] border-collapse text-left text-xs">
             <thead class="sticky top-0 z-10 bg-muted text-muted-foreground">
               <tr class="border-b border-border">

@@ -88,7 +88,7 @@
     min-width: 520px;
     padding: 16px;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: hidden;
   }
 }
 
