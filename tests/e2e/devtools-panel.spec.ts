@@ -63,7 +63,20 @@ test('renders the built DevTools panel shell', async ({ page }) => {
 
   try {
     await page.addInitScript(() => {
+      const messages: Record<string, string> = {
+        info: 'Select two elements in the Elements tab of the DevTools panel and the style differences will be shown below.',
+        inputPlaceholder: 'Please enter the css property you want to view',
+        isAllProperty: 'Show all',
+        property: 'property',
+        removeBtn: 'Clear Selection',
+        selectedInfo: 'Please select two elements to compare.',
+        tableColumnInfo: 'The header name is concatenated from the DOM\'s `TagName`, `Id`, and `Class` attributes using `$$$$`.',
+      }
+
       const extensionApi = {
+        i18n: {
+          getMessage: (key: string) => messages[key] ?? key,
+        },
         runtime: {
           id: 'test-extension',
           getURL: (value = '') => value,

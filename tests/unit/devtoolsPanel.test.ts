@@ -1,13 +1,23 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { createI18n } from 'vue-i18n'
 import { fakeBrowser } from 'wxt/testing'
-import messages from '../../entrypoints/devtools-panel/lang'
 
 describe('devtools-panel', () => {
   it('renders the initial comparison panel shell', async () => {
     vi.resetModules()
     await fakeBrowser.tabs.create({ active: true, url: 'https://example.com' })
+
+    const messages: Record<string, string> = {
+      info: 'Select two elements in the Elements tab of the DevTools panel and the style differences will be shown below.',
+      inputPlaceholder: 'Please enter the css property you want to view',
+      isAllProperty: 'Show all',
+      property: 'property',
+      removeBtn: 'Clear Selection',
+      selectedInfo: 'Please select two elements to compare.',
+      tableColumnInfo: 'The header name is concatenated from the DOM\'s `TagName`, `Id`, and `Class` attributes using `$$$$`.',
+    }
+
+    vi.spyOn(fakeBrowser.i18n, 'getMessage').mockImplementation((key: string) => messages[key] ?? key)
 
     ;(globalThis as any).browser.devtools = {
       panels: {
@@ -23,14 +33,9 @@ describe('devtools-panel', () => {
     }
 
     const { default: DevtoolsPanel } = await import('../../entrypoints/devtools-panel/devtools-panel.vue')
-    const i18n = createI18n({
-      locale: 'en',
-      messages,
-    })
 
     const wrapper = mount(DevtoolsPanel, {
       global: {
-        plugins: [i18n],
         stubs: {
           ElBacktop: true,
           ElButton: { template: '<button><slot /></button>' },

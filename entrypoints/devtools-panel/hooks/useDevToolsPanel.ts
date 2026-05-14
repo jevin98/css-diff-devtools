@@ -1,12 +1,11 @@
 import type { CssDiffsType, SelectedElType } from '../types'
 import { useClipboard } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
-import { useI18n } from 'vue-i18n'
+import { t } from '../lang'
 import SM from '../message'
 import { compareStyles, formatStyle, type FormatStyleValue, getVisibleCssDiffs } from '../utils'
 
 export function useDevToolsPanel() {
-  const { t } = useI18n()
   const inputValue = ref('')
 
   const selectedEl: Array<SelectedElType> = reactive([])
