@@ -3,7 +3,7 @@ import { useClipboard } from '@vueuse/core'
 import { toast } from 'vue-sonner'
 import { t } from '../lang'
 import SM from '../message'
-import { formatStyle, type FormatStyleValue } from '../utils'
+import { formatStyle, type FormatStyleValue, UNDEFINED_STYLE_VALUE } from '../utils'
 
 export function useDevToolsPanel() {
   const inputValue = ref('')
@@ -91,8 +91,8 @@ export function useDevToolsPanel() {
     ])
 
     allProperties.forEach((property) => {
-      const left = styles1[property] || '未定义'
-      const right = styles2[property] || '未定义'
+      const left = styles1[property] || UNDEFINED_STYLE_VALUE
+      const right = styles2[property] || UNDEFINED_STYLE_VALUE
 
       diffs.push({
         property,

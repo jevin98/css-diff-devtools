@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Theme } from './utils/theme'
-import { ArrowUp, Copy, Info, Moon, Search, Sun, Trash2, X } from 'lucide-vue-next'
+import { ArrowUp, Copy, Diff, Info, Languages, Moon, Search, Sun, Trash2, X } from 'lucide-vue-next'
 import { computed, defineComponent, h, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -13,8 +13,15 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useDevToolsPanel } from './hooks/useDevToolsPanel'
-import { t } from './lang'
-import { filterJoin, getNextTheme, resolveStoredTheme, THEME_STORAGE_KEY } from './utils'
+import {
+  activeLocale,
+  getNextLocale,
+  initializeLocale,
+  LOCALE_STORAGE_KEY,
+  setLocale,
+  t,
+} from './lang'
+import { filterJoin, getDiffValueClass, getNextTheme, resolveStoredTheme, THEME_STORAGE_KEY } from './utils'
 
 const {
   inputValue,
@@ -28,6 +35,7 @@ const {
 const theme = ref<Theme>('light')
 const isDark = computed(() => theme.value === 'dark')
 const tableColumnCount = computed(() => selectedEl.length + 1)
+const localeLabel = computed(() => activeLocale.value === 'zh_CN' ? '中' : 'EN')
 
 function applyTheme(value: Theme) {
   document.documentElement.classList.toggle('dark', value === 'dark')
@@ -39,11 +47,19 @@ function handleToggleTheme() {
   localStorage.setItem(THEME_STORAGE_KEY, theme.value)
 }
 
+function handleToggleLocale() {
+  const nextLocale = getNextLocale(activeLocale.value)
+
+  setLocale(nextLocale)
+  localStorage.setItem(LOCALE_STORAGE_KEY, nextLocale)
+}
+
 function handleScrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 onMounted(() => {
+  initializeLocale(localStorage.getItem(LOCALE_STORAGE_KEY))
   theme.value = resolveStoredTheme(localStorage.getItem(THEME_STORAGE_KEY))
   applyTheme(theme.value)
 })
@@ -88,6 +104,20 @@ const PropertyNode = defineComponent({
         </div>
 
         <div class="flex shrink-0 items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            class="relative"
+            :aria-label="t('switchLanguage')"
+            :title="t('switchLanguage')"
+            @click="handleToggleLocale"
+          >
+            <Languages class="h-4 w-4" />
+            <span class="absolute -bottom-0.5 -right-0.5 rounded-sm bg-background px-0.5 text-[9px] font-semibold leading-none text-foreground ring-1 ring-border">
+              {{ localeLabel }}
+            </span>
+          </Button>
+
           <Button
             variant="ghost"
             size="icon"
@@ -186,17 +216,26 @@ const PropertyNode = defineComponent({
                   : 'border-l-transparent bg-background text-muted-foreground'"
               >
                 <td class="w-[220px] px-3 py-2 align-top font-medium">
-                  <PropertyNode :text="row.property" />
+                  <div class="flex items-start gap-2">
+                    <Diff v-if="row.isDiff" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-foreground" />
+                    <span v-else class="h-3.5 w-3.5 shrink-0" />
+                    <PropertyNode :text="row.property" />
+                  </div>
                 </td>
                 <td
                   v-for="el in selectedEl"
                   :key="`${row.property}-${el.valueType}`"
                   class="group min-w-[240px] cursor-copy border-l border-border px-3 py-2 align-top transition-colors hover:bg-accent hover:text-accent-foreground"
-                  :class="row.isDiff ? 'font-medium' : ''"
+                  :class="row.isDiff ? 'bg-muted/40 font-medium text-foreground' : ''"
                   @click="handleCopyStyle(row, el.valueType)"
                 >
                   <div class="flex items-start justify-between gap-3">
-                    <span class="break-all">{{ row[el.valueType] }}</span>
+                    <span
+                      class="break-all rounded-sm border px-1.5 py-0.5"
+                      :class="getDiffValueClass(row, el.valueType)"
+                    >
+                      {{ row[el.valueType] }}
+                    </span>
                     <Copy class="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
                 </td>

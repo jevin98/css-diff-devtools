@@ -1,3 +1,5 @@
 export * from './array'
+export * from './diff'
 export * from './formatStyle'
+export * from './locale'
 export * from './theme'

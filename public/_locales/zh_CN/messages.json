@@ -5,6 +5,9 @@
   "extDescription": {
     "message": "一个用于比较 CSS 差异的浏览器扩展。"
   },
+  "switchLanguage": {
+    "message": "切换语言"
+  },
   "info": {
     "message": "在 DevTools 面板的 Elements 选项卡中选择两个元素，样式差异将显示在下面。"
   },
