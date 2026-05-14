@@ -16,12 +16,12 @@ export function getDiffValueClass(row: CssDiffsType, valueType: 'left' | 'right'
   const tone = getDiffValueTone(row, valueType)
 
   if (tone === 'changed') {
-    return 'border-foreground/30 bg-background text-foreground shadow-[inset_3px_0_0_hsl(var(--foreground))]'
+    return 'border-foreground bg-foreground font-semibold text-background shadow-sm'
   }
 
   if (tone === 'missing') {
-    return 'border-dashed border-foreground/40 bg-muted text-muted-foreground shadow-[inset_3px_0_0_hsl(var(--muted-foreground))]'
+    return 'border-dashed border-foreground bg-background font-semibold text-foreground shadow-[inset_0_0_0_1px_hsl(var(--foreground))]'
   }
 
-  return 'border-transparent text-muted-foreground'
+  return 'border-transparent bg-transparent text-muted-foreground'
 }

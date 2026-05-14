@@ -226,14 +226,22 @@ const PropertyNode = defineComponent({
               <tr
                 v-for="row in renderCssDiffs"
                 :key="row.property"
-                class="border-l-4 border-b border-border transition-colors last:border-b-0"
+                class="border-l-[6px] border-b border-border transition-colors last:border-b-0"
                 :class="row.isDiff
-                  ? 'border-l-foreground bg-muted/60 text-foreground'
+                  ? 'border-l-foreground bg-muted/90 text-foreground shadow-[inset_0_1px_0_hsl(var(--foreground)/0.08),inset_0_-1px_0_hsl(var(--foreground)/0.08)]'
                   : 'border-l-transparent bg-background text-muted-foreground'"
               >
-                <td class="w-[220px] px-3 py-2 align-top font-medium">
+                <td
+                  class="w-[220px] px-3 py-2 align-top font-medium"
+                  :class="row.isDiff ? 'bg-foreground/5 text-foreground' : ''"
+                >
                   <div class="flex items-start gap-2">
-                    <Diff v-if="row.isDiff" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-foreground" />
+                    <span
+                      v-if="row.isDiff"
+                      class="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-foreground text-background"
+                    >
+                      <Diff class="h-3 w-3" />
+                    </span>
                     <span v-else class="h-3.5 w-3.5 shrink-0" />
                     <PropertyNode :text="row.property" />
                   </div>
@@ -242,12 +250,12 @@ const PropertyNode = defineComponent({
                   v-for="el in selectedEl"
                   :key="`${row.property}-${el.valueType}`"
                   class="group min-w-[240px] cursor-copy border-l border-border px-3 py-2 align-top transition-colors hover:bg-accent hover:text-accent-foreground"
-                  :class="row.isDiff ? 'bg-muted/40 font-medium text-foreground' : ''"
+                  :class="row.isDiff ? 'bg-muted/70 font-medium text-foreground' : ''"
                   @click="handleCopyStyle(row, el.valueType)"
                 >
                   <div class="flex items-start justify-between gap-3">
                     <span
-                      class="break-all rounded-sm border px-1.5 py-0.5"
+                      class="break-all rounded-sm border px-2 py-1 leading-none"
                       :class="getDiffValueClass(row, el.valueType)"
                     >
                       {{ row[el.valueType] }}

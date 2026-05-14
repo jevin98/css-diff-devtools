@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { getDiffValueTone, UNDEFINED_STYLE_VALUE } from './diff.ts'
+import { getDiffValueClass, getDiffValueTone, UNDEFINED_STYLE_VALUE } from './diff.ts'
 
 describe('diff utilities', () => {
   it('marks both sides of a changed row as changed', () => {
@@ -8,6 +8,8 @@ describe('diff utilities', () => {
 
     assert.equal(getDiffValueTone(row, 'left'), 'changed')
     assert.equal(getDiffValueTone(row, 'right'), 'changed')
+    assert.match(getDiffValueClass(row, 'left'), /\bbg-foreground\b/)
+    assert.match(getDiffValueClass(row, 'right'), /\bbg-foreground\b/)
   })
 
   it('marks an undefined side as missing', () => {
@@ -15,6 +17,7 @@ describe('diff utilities', () => {
 
     assert.equal(getDiffValueTone(row, 'left'), 'missing')
     assert.equal(getDiffValueTone(row, 'right'), 'changed')
+    assert.match(getDiffValueClass(row, 'left'), /\bborder-dashed\b/)
   })
 
   it('keeps equal rows visually muted', () => {
