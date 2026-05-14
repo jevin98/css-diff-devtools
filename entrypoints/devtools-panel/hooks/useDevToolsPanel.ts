@@ -1,6 +1,6 @@
 import type { CssDiffsType, SelectedElType } from '../types'
 import { useClipboard } from '@vueuse/core'
-import { ElMessage } from 'element-plus'
+import { toast } from 'vue-sonner'
 import { t } from '../lang'
 import SM from '../message'
 import { formatStyle, type FormatStyleValue } from '../utils'
@@ -117,46 +117,17 @@ export function useDevToolsPanel() {
       : cssDiffs.filter(c => c.property.includes(inputValue))
   }
 
-  function onTableCellClassName({ columnIndex }: { columnIndex: number }) {
-    return !columnIndex ? 'text-[var(--el-table-text-color)] cursor-auto' : ''
-  }
+  async function handleCopyStyle(row: CssDiffsType, valueType: 'left' | 'right') {
+    const source = `${row.property}: ${row[valueType]};`
 
-  function onTableRowClassName({ row }: { row: CssDiffsType }) {
-    if (row.isDiff) {
-      return '!bg-[#ffe6e6] text-[red] cursor-pointer'
-    }
-    else {
-      return '!bg-[#e6ffe6] text-[green] cursor-pointer'
-    }
-  }
+    const { copy } = useClipboard({
+      read: true,
+      source,
+      legacy: true,
+    })
 
-  function handleCopyStyle(row: CssDiffsType, column: any) {
-    if (column.property !== 'property') {
-      const source = `${row.property}: ${row[column.property as 'left' | 'right']};`
-
-      const { text, copied, copy } = useClipboard({
-        read: true,
-        source,
-        legacy: true,
-      })
-
-      copy(source)
-
-      watch(
-        () => copied.value,
-        (copied) => {
-          if (copied) {
-            ElMessage({
-              message: `${t('copyInfo')} > ${text.value}`,
-              type: 'success',
-            })
-          }
-        },
-        {
-          immediate: true,
-        },
-      )
-    }
+    await copy(source)
+    toast.success(`${t('copyInfo')} > ${source}`)
   }
 
   return {
@@ -166,8 +137,6 @@ export function useDevToolsPanel() {
     renderCssDiffs,
     isAllProperty,
     handleClearSelection,
-    onTableCellClassName,
-    onTableRowClassName,
     handleCopyStyle,
   }
 }

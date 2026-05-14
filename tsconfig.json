@@ -1,6 +1,11 @@
 {
   "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
-    "types": ["element-plus/global", "chrome"]
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "types": ["chrome"],
+    "allowImportingTsExtensions": true
   }
 }
