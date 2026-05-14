@@ -5,7 +5,7 @@ export type DiffValueTone = 'changed' | 'missing' | 'muted'
 export const UNDEFINED_STYLE_VALUE = '未定义'
 
 export function getDiffValueTone(row: CssDiffsType, valueType: 'left' | 'right'): DiffValueTone {
-  if (!row.isDiff) {
+  if (!row.isDiff || valueType === 'left') {
     return 'muted'
   }
 
@@ -16,12 +16,12 @@ export function getDiffValueClass(row: CssDiffsType, valueType: 'left' | 'right'
   const tone = getDiffValueTone(row, valueType)
 
   if (tone === 'changed') {
-    return 'border-foreground bg-foreground font-semibold text-background shadow-sm'
+    return 'border-red-600 bg-red-50 font-semibold text-red-700 shadow-[inset_3px_0_0_rgb(220_38_38)] dark:border-red-400 dark:bg-red-950/30 dark:text-red-200'
   }
 
   if (tone === 'missing') {
-    return 'border-dashed border-foreground bg-background font-semibold text-foreground shadow-[inset_0_0_0_1px_hsl(var(--foreground))]'
+    return 'border-dashed border-red-600 bg-red-50 font-semibold text-red-700 shadow-[inset_3px_0_0_rgb(220_38_38)] dark:border-red-400 dark:bg-red-950/30 dark:text-red-200'
   }
 
-  return 'border-transparent bg-transparent text-muted-foreground'
+  return 'border-border bg-background text-foreground'
 }
