@@ -13,7 +13,7 @@ class SendMessage {
   private async init() {
     const [currentTab] = await browser.tabs.query({ active: true })
 
-    this.currentTabId = currentTab.id!
+    this.currentTabId = currentTab?.id
   }
 
   public async send(data: Array<SelectedElType>) {
@@ -21,10 +21,10 @@ class SendMessage {
 
     (windows as unknown as Array<_Window>).forEach((window) => {
       for (const tab of window.tabs) {
-        if (tab.id !== this.currentTabId) {
+        if (tab.id != null && tab.id !== this.currentTabId) {
           // Send selected data to other windows/tabs
           browser.tabs.sendMessage(
-            tab.id!,
+            tab.id,
             data,
           )
         }
