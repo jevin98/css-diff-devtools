@@ -25,6 +25,8 @@ import {
 } from './lang'
 import { filterJoin, getDiffValueClass, getNextTheme, resolveLocale, resolveStoredTheme, THEME_STORAGE_KEY } from './utils'
 
+const logoUrl = new URL('../../img/logo.png', import.meta.url).href
+
 const {
   inputValue,
   selectedEl,
@@ -166,9 +168,11 @@ const PropertyNode = defineComponent({
   <main class="flex h-[calc(100vh-32px)] min-h-0 flex-col bg-background text-foreground">
     <header class="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border px-4">
       <div class="flex min-w-0 items-center gap-3">
-        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted text-xs font-semibold">
-          DD
-        </div>
+        <img
+          :src="logoUrl"
+          alt="CSS-Diff logo"
+          class="h-8 w-8 shrink-0 rounded-md border border-border bg-background object-cover"
+        >
         <div class="min-w-0">
           <h1 class="truncate text-sm font-semibold leading-5 tracking-normal">
             DOM Diff

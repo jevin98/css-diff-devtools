@@ -141,6 +141,7 @@ test('renders the built DevTools panel shell', async ({ page }) => {
     await mockExtensionApi(page)
     await page.goto(server.url)
 
+    await expect(page.getByRole('img', { name: 'CSS-Diff logo' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'DOM Diff' })).toBeVisible()
     await expect(page.getByText('Waiting for selection')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Selection' })).toBeVisible()
