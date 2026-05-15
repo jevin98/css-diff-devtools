@@ -100,10 +100,12 @@ pnpm test:e2e
 
 ## 技术栈
 
+- [pnpm](https://pnpm.io/) 用于包管理
 - [WXT](https://wxt.dev/) 用于浏览器扩展开发
-- [Vue 3](https://vuejs.org/) 用于 DevTools 面板 UI
-- [Element Plus](https://element-plus.org/) 和 [Tailwind CSS](https://tailwindcss.com/) 用于界面组件与样式
-- TypeScript 和 `vue-tsc` 用于类型检查
+- [Vue 3](https://vuejs.org/) 搭配 TypeScript 用于 DevTools 面板 UI
+- shadcn-vue 风格的本地组件、[Reka UI](https://reka-ui.com/) 和 [lucide-vue-next](https://lucide.dev/) 用于 UI 基础组件与图标
+- [Tailwind CSS v4](https://tailwindcss.com/) 用于样式和设计 token
+- `vue-tsc`、[Vitest](https://vitest.dev/) 和 [Playwright](https://playwright.dev/) 用于类型检查与验证
 - WXT/browser `i18n` 用于本地化文案
 
 ## 灵感来源

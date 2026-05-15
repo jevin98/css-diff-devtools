@@ -100,10 +100,12 @@ pnpm test:e2e
 
 ## Tech Stack
 
+- [pnpm](https://pnpm.io/) for package management
 - [WXT](https://wxt.dev/) for browser extension development
-- [Vue 3](https://vuejs.org/) for the DevTools panel UI
-- [Element Plus](https://element-plus.org/) and [Tailwind CSS](https://tailwindcss.com/) for interface components and styling
-- TypeScript and `vue-tsc` for type checking
+- [Vue 3](https://vuejs.org/) with TypeScript for the DevTools panel UI
+- shadcn-vue style local components, [Reka UI](https://reka-ui.com/), and [lucide-vue-next](https://lucide.dev/) for UI primitives and icons
+- [Tailwind CSS v4](https://tailwindcss.com/) for styling and design tokens
+- `vue-tsc`, [Vitest](https://vitest.dev/), and [Playwright](https://playwright.dev/) for type checking and verification
 - WXT/browser `i18n` for localized messages
 
 ## Inspiration
