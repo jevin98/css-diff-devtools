@@ -8,6 +8,12 @@
   "switchLanguage": {
     "message": "切换语言"
   },
+  "switchToDarkTheme": {
+    "message": "切换到深色主题"
+  },
+  "switchToLightTheme": {
+    "message": "切换到浅色主题"
+  },
   "selection": {
     "message": "选择"
   },
@@ -85,6 +91,9 @@
   },
   "copyInfo": {
     "message": "复制成功"
+  },
+  "clearFilter": {
+    "message": "清空筛选"
   },
   "inputPlaceholder": {
     "message": "请输入需要查看的 css 属性"

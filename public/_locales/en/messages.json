@@ -8,6 +8,12 @@
   "switchLanguage": {
     "message": "Switch language"
   },
+  "switchToDarkTheme": {
+    "message": "Switch to dark theme"
+  },
+  "switchToLightTheme": {
+    "message": "Switch to light theme"
+  },
   "selection": {
     "message": "Selection"
   },
@@ -85,6 +91,9 @@
   },
   "copyInfo": {
     "message": "Copy Success"
+  },
+  "clearFilter": {
+    "message": "Clear filter"
   },
   "inputPlaceholder": {
     "message": "Please enter the css property you want to view"

@@ -224,6 +224,62 @@ test('renders the built DevTools panel shell', async ({ page }) => {
   }
 })
 
+test('uses localized accessible labels for icon controls', async ({ page }) => {
+  test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
+  const server = await serveOutputDir()
+
+  try {
+    await mockSystemTheme(page, 'light')
+    await page.addInitScript(() => {
+      localStorage.setItem('css-diff-locale', 'zh_CN')
+      localStorage.setItem('css-diff-theme', 'light')
+    })
+    await mockExtensionApi(page)
+    await page.goto(server.url)
+
+    await expect(page.getByRole('button', { name: '切换到深色主题' })).toBeVisible()
+
+    await page.getByPlaceholder('请输入需要查看的 css 属性').fill('color')
+
+    await expect(page.getByRole('button', { name: '清空筛选' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Clear filter' })).toHaveCount(0)
+  }
+  finally {
+    await server.close()
+  }
+})
+
+test('lets the panel shell fit narrow DevTools sidebars', async ({ page }) => {
+  test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
+  const server = await serveOutputDir()
+
+  try {
+    await page.setViewportSize({ width: 420, height: 720 })
+    await mockExtensionApi(page)
+    await page.goto(server.url)
+
+    const bodyLayout = await page.evaluate(() => {
+      const style = window.getComputedStyle(document.body)
+
+      return {
+        margin: style.margin,
+        minWidth: style.minWidth,
+        overflowX: style.overflowX,
+        documentWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth,
+      }
+    })
+
+    expect(bodyLayout.margin).toBe('0px')
+    expect(bodyLayout.minWidth).toBe('0px')
+    expect(bodyLayout.overflowX).not.toBe('hidden')
+    expect(bodyLayout.documentWidth).toBeLessThanOrEqual(bodyLayout.viewportWidth)
+  }
+  finally {
+    await server.close()
+  }
+})
+
 test('follows the system theme until the user toggles manually', async ({ page }) => {
   test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
   const server = await serveOutputDir()

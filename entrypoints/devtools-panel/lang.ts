@@ -31,7 +31,10 @@ export type MessageKey =
   | 'total'
   | 'undefinedStyleValue'
   | 'copyInfo'
+  | 'clearFilter'
   | 'inputPlaceholder'
+  | 'switchToDarkTheme'
+  | 'switchToLightTheme'
   | 'waitingSelection'
 
 const messages = {
