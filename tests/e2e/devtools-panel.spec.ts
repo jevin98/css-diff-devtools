@@ -133,6 +133,21 @@ async function mockExtensionApi(page: Page) {
   })
 }
 
+async function mockSystemTheme(page: Page, theme: 'light' | 'dark') {
+  await page.addInitScript((themeValue) => {
+    window.matchMedia = (query: string) => ({
+      matches: query === '(prefers-color-scheme: dark)' && themeValue === 'dark',
+      media: query,
+      onchange: null,
+      addEventListener() {},
+      removeEventListener() {},
+      addListener() {},
+      removeListener() {},
+      dispatchEvent: () => false,
+    })
+  }, theme)
+}
+
 test('renders the built DevTools panel shell', async ({ page }) => {
   test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
   const server = await serveOutputDir()
@@ -202,6 +217,28 @@ test('renders the built DevTools panel shell', async ({ page }) => {
 
     expect(clearSelectionBox.height).toBe(languageBox.height)
     expect(filterModeBox.height).toBe(languageBox.height)
+  }
+  finally {
+    await server.close()
+  }
+})
+
+test('follows the system theme until the user toggles manually', async ({ page }) => {
+  test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
+  const server = await serveOutputDir()
+
+  try {
+    await mockSystemTheme(page, 'dark')
+    await mockExtensionApi(page)
+    await page.goto(server.url)
+
+    await expect(page.locator('html')).toHaveClass(/dark/)
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('css-diff-theme'))).toBeNull()
+
+    await page.getByTestId('theme-toggle').click()
+
+    await expect(page.locator('html')).not.toHaveClass(/dark/)
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('css-diff-theme'))).toBe('light')
   }
   finally {
     await server.close()

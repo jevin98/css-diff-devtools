@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { SelectedElType } from './types'
-import type { Theme } from './utils/theme'
+import type { Theme, ThemePreference } from './utils/theme'
 import { Copy, Globe, Info, Moon, Search, Sun, Trash2, X } from 'lucide-vue-next'
-import { computed, defineComponent, h, onMounted, ref } from 'vue'
+import { computed, defineComponent, h, onMounted, onUnmounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -23,7 +23,7 @@ import {
   SUPPORTED_LOCALES,
   t,
 } from './lang'
-import { filterJoin, getDiffValueClass, getNextTheme, resolveLocale, resolveStoredTheme, THEME_STORAGE_KEY } from './utils'
+import { filterJoin, getDiffValueClass, getNextTheme, getSystemTheme, resolveAppliedTheme, resolveLocale, resolveStoredTheme, THEME_MEDIA_QUERY, THEME_STORAGE_KEY } from './utils'
 
 const logoUrl = new URL('../../img/logo.png', import.meta.url).href
 
@@ -38,8 +38,11 @@ const {
   handleCopyStyle,
 } = useDevToolsPanel()
 
-const theme = ref<Theme>('light')
-const isDark = computed(() => theme.value === 'dark')
+const themePreference = ref<ThemePreference>('system')
+const systemTheme = ref<Theme>('light')
+const appliedTheme = computed(() => resolveAppliedTheme(themePreference.value, systemTheme.value))
+const isDark = computed(() => appliedTheme.value === 'dark')
+let systemThemeQuery: MediaQueryList | undefined
 
 const sourceElement = computed(() => selectedEl.find(el => el.valueType === 'left'))
 const targetElement = computed(() => selectedEl.find(el => el.valueType === 'right'))
@@ -89,10 +92,20 @@ function applyTheme(value: Theme) {
   document.documentElement.classList.toggle('dark', value === 'dark')
 }
 
+function handleSystemThemeChange(event: MediaQueryListEvent) {
+  systemTheme.value = getSystemTheme(event.matches)
+
+  if (themePreference.value === 'system') {
+    applyTheme(appliedTheme.value)
+  }
+}
+
 function handleToggleTheme() {
-  theme.value = getNextTheme(theme.value)
-  applyTheme(theme.value)
-  localStorage.setItem(THEME_STORAGE_KEY, theme.value)
+  const nextTheme = getNextTheme(appliedTheme.value)
+
+  themePreference.value = nextTheme
+  applyTheme(nextTheme)
+  localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
 }
 
 function handleLocaleChange(value: string) {
@@ -134,8 +147,15 @@ function getElementValue(value?: string) {
 
 onMounted(() => {
   initializeLocale(localStorage.getItem(LOCALE_STORAGE_KEY))
-  theme.value = resolveStoredTheme(localStorage.getItem(THEME_STORAGE_KEY))
-  applyTheme(theme.value)
+  systemThemeQuery = window.matchMedia(THEME_MEDIA_QUERY)
+  systemTheme.value = getSystemTheme(systemThemeQuery.matches)
+  themePreference.value = resolveStoredTheme(localStorage.getItem(THEME_STORAGE_KEY))
+  applyTheme(appliedTheme.value)
+  systemThemeQuery.addEventListener('change', handleSystemThemeChange)
+})
+
+onUnmounted(() => {
+  systemThemeQuery?.removeEventListener('change', handleSystemThemeChange)
 })
 
 const PropertyNode = defineComponent({
