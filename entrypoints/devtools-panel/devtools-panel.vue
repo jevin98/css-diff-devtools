@@ -36,6 +36,8 @@ const {
   handleClearSelection,
   handleRemoveSelectedElement,
   handleCopyStyle,
+  handleInspectSelectedElement,
+  handleRestoreInspectedElement,
 } = useDevToolsPanel()
 
 const themePreference = ref<ThemePreference>('system')
@@ -147,6 +149,20 @@ function getElementValue(value?: string) {
 
 function getStyleValueLabel(value: string) {
   return value === UNDEFINED_STYLE_VALUE ? t('undefinedStyleValue') : value
+}
+
+function handleInspectPointerLeave(event: PointerEvent, element: SelectedElType) {
+  const relatedTarget = event.relatedTarget
+
+  if (relatedTarget instanceof Element) {
+    const nextInspectTarget = relatedTarget.closest('[data-css-diff-inspect-id]')
+
+    if (nextInspectTarget?.getAttribute('data-css-diff-inspect-id')) {
+      return
+    }
+  }
+
+  handleRestoreInspectedElement(element)
 }
 
 onMounted(() => {
@@ -403,6 +419,10 @@ const PropertyNode = defineComponent({
                   v-for="slot in selectionSlots"
                   :key="slot.key"
                   class="min-w-[280px] border-l border-border px-3 py-2 font-medium"
+                  :data-css-diff-inspect-id="slot.element?.inspectId"
+                  :title="slot.element ? t('nativeHoverTooltip') : undefined"
+                  @pointerenter="slot.element && handleInspectSelectedElement(slot.element)"
+                  @pointerleave="slot.element && handleInspectPointerLeave($event, slot.element)"
                 >
                   <div class="flex items-center justify-between gap-2">
                     <div class="min-w-0">
@@ -493,6 +513,10 @@ const PropertyNode = defineComponent({
                   :key="`${row.property}-${slot.key}`"
                   class="group min-w-[280px] cursor-copy border-l border-border px-3 py-2 align-top transition-colors hover:bg-accent hover:text-accent-foreground"
                   :class="row.isDiff ? 'bg-muted/30 font-medium text-foreground' : ''"
+                  :data-css-diff-inspect-id="slot.element?.inspectId"
+                  :title="slot.element ? t('nativeHoverTooltip') : undefined"
+                  @pointerenter="slot.element && handleInspectSelectedElement(slot.element)"
+                  @pointerleave="slot.element && handleInspectPointerLeave($event, slot.element)"
                   @click="slot.element && handleCopyStyle(row, slot.element.valueType)"
                 >
                   <div class="flex items-start justify-between gap-3">

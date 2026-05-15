@@ -21,6 +21,7 @@ Browser DevTools is excellent at inspecting one element, but finding why two sim
 - **Difference-first table**: changed properties are shown by default, with a `Show all` toggle for the full computed style list.
 - **Property search**: filter CSS properties by name while reviewing the comparison.
 - **One-click copy**: click a value cell to copy `property: value;`.
+- **Native page hover highlight**: hover a source/target DOM line in the diff table to highlight that DOM node in the inspected page, and remove the highlight immediately when the pointer leaves.
 - **Cross-window/tab sync**: selected element data is broadcast to other open windows/tabs, which helps compare page states side by side.
 - **Localized UI**: includes English and Simplified Chinese browser i18n messages.
 
@@ -31,6 +32,17 @@ Browser DevTools is excellent at inspecting one element, but finding why two sim
 
 Download the packaged zip from [Releases](https://github.com/jevin98/css-diff-devtools/releases), then install or load it manually from your browser's extensions page.
 
+## Chrome Debugger Permission
+
+CSS-Diff requests Chrome's `debugger` permission so the diff table can use the Chrome DevTools Protocol `Overlay.highlightNode` and `Overlay.hideHighlight` commands. This is what makes DOM line hover highlighting appear and disappear immediately in the inspected page.
+
+Chrome treats this permission as sensitive:
+
+- Chrome may show a permission warning when the extension is installed or updated.
+- Chrome may show a browser-level notice that CSS-Diff is debugging the current page while the extension is attached.
+- CSS-Diff uses this permission only for temporary DOM hover highlighting from the DevTools sidebar.
+- If the permission is denied, CSS comparison still works, but native hover highlighting in the inspected page is unavailable.
+
 ## Usage
 
 1. Open the page you want to inspect.
@@ -38,8 +50,9 @@ Download the packaged zip from [Releases](https://github.com/jevin98/css-diff-de
 3. Open the `CSS-Diff` sidebar.
 4. Select the first DOM element, then select the second DOM element.
 5. Review the highlighted differences, search for a property, or enable `Show all`.
-6. Click a left/right value cell to copy the CSS declaration.
-7. Click `Clear Selection` to start another comparison.
+6. Hover a source/target DOM line in the diff table to highlight that DOM node in the inspected page.
+7. Click a left/right value cell to copy the CSS declaration.
+8. Click `Clear Selection` to start another comparison.
 
 ## Local Development
 

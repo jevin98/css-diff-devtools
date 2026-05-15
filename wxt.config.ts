@@ -8,7 +8,7 @@ export default defineConfig({
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
     default_locale: 'en',
-    permissions: ['nativeMessaging', 'tabs', 'activeTab', 'scripting'],
+    permissions: ['nativeMessaging', 'tabs', 'activeTab', 'scripting', 'debugger'],
   },
   modules: ['@wxt-dev/module-vue'],
   vite: () => ({

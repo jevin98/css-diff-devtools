@@ -33,6 +33,7 @@ export type MessageKey =
   | 'copyInfo'
   | 'clearFilter'
   | 'inputPlaceholder'
+  | 'nativeHoverTooltip'
   | 'switchToDarkTheme'
   | 'switchToLightTheme'
   | 'waitingSelection'

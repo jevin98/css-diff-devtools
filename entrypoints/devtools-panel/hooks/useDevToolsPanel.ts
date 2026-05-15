@@ -3,7 +3,7 @@ import { useClipboard } from '@vueuse/core'
 import { toast } from 'vue-sonner'
 import { t } from '../lang'
 import SM from '../message'
-import { compareStyles, formatStyle, type FormatStyleValue, getVisibleCssDiffs, UNDEFINED_STYLE_VALUE } from '../utils'
+import { type CaptureSelectedElementResult, compareStyles, createCaptureSelectedElementScript, devToolsOverlayHighlighter, getVisibleCssDiffs, UNDEFINED_STYLE_VALUE } from '../utils'
 
 export function useDevToolsPanel() {
   const inputValue = ref('')
@@ -12,31 +12,26 @@ export function useDevToolsPanel() {
   const cssDiffs: Array<CssDiffsType> = reactive([])
 
   const isAllProperty = ref(false)
-  const isLoadComplete = ref(false)
 
   onMounted(() => {
     browser.devtools.panels.elements.onSelectionChanged.addListener(() => {
-      browser.devtools.inspectedWindow.eval(
-        `(() => document.readyState)($0)`,
-        (readyState: Document['readyState']) => {
-          if (readyState === 'complete') {
-            isLoadComplete.value = true
-          }
-          else {
-            isLoadComplete.value = false
-          }
-        },
-      )
+      const valueType = getAvailableValueType()
+
+      if (!valueType) {
+        return
+      }
 
       browser.devtools.inspectedWindow.eval(
-        `(${formatStyle.toString()})($0)`,
-        (result: FormatStyleValue, isException) => {
-          if (!isException && result != null && isLoadComplete.value) {
-            const valueType = getAvailableValueType()
-
-            if (valueType) {
-              saveSelectedEl({ ...result, valueType })
-            }
+        createCaptureSelectedElementScript(valueType),
+        (payload: CaptureSelectedElementResult, isException) => {
+          if (!isException && payload?.readyState === 'complete' && payload.result != null) {
+            saveSelectedEl({
+              ...payload.result,
+              inspectId: payload.inspectId,
+              inspectPath: payload.inspectPath,
+              inspectTabId: browser.devtools.inspectedWindow.tabId,
+              valueType,
+            })
           }
         },
       )
@@ -55,11 +50,16 @@ export function useDevToolsPanel() {
 
       if (selectedEl.length === 2) {
         compareSelectedEl()
+        prepareSelectedElementOverlay()
       }
       else {
         cssDiffs.length = 0
       }
     })
+  })
+
+  onUnmounted(() => {
+    devToolsOverlayHighlighter.detach()
   })
 
   function saveSelectedEl(result: SelectedElType) {
@@ -74,12 +74,14 @@ export function useDevToolsPanel() {
 
     if (selectedEl.length === 2) {
       compareSelectedEl()
+      prepareSelectedElementOverlay()
     }
   }
 
   function handleClearSelection() {
     selectedEl.length = 0
     cssDiffs.length = 0
+    devToolsOverlayHighlighter.detach()
 
     // Send selected data to other windows/tabs
     SM.send([])
@@ -94,6 +96,7 @@ export function useDevToolsPanel() {
 
     selectedEl.splice(index, 1)
     cssDiffs.length = 0
+    devToolsOverlayHighlighter.detach()
 
     // Send selected data to other windows/tabs
     SM.send(selectedEl)
@@ -148,6 +151,39 @@ export function useDevToolsPanel() {
     toast.success(`${t('copyInfo')} > ${source}`)
   }
 
+  function prepareSelectedElementOverlay() {
+    const inspectedTabId = browser.devtools.inspectedWindow.tabId
+    const localElement = selectedEl.find(element => element.inspectTabId === inspectedTabId)
+
+    if (!localElement) {
+      return
+    }
+
+    devToolsOverlayHighlighter.prepare({
+      inspectTabId: localElement.inspectTabId,
+    })
+  }
+
+  function handleInspectSelectedElement(element: SelectedElType) {
+    if (!element.inspectId) {
+      return
+    }
+
+    devToolsOverlayHighlighter.highlight({
+      inspectId: element.inspectId,
+      inspectPath: element.inspectPath,
+      inspectTabId: element.inspectTabId,
+    })
+  }
+
+  function handleRestoreInspectedElement(element: SelectedElType) {
+    if (!element.inspectId) {
+      return
+    }
+
+    devToolsOverlayHighlighter.hide()
+  }
+
   return {
     inputValue,
 
@@ -158,5 +194,7 @@ export function useDevToolsPanel() {
     handleClearSelection,
     handleRemoveSelectedElement,
     handleCopyStyle,
+    handleInspectSelectedElement,
+    handleRestoreInspectedElement,
   }
 }

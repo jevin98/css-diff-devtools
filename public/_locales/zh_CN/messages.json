@@ -97,5 +97,8 @@
   },
   "inputPlaceholder": {
     "message": "请输入需要查看的 css 属性"
+  },
+  "nativeHoverTooltip": {
+    "message": "悬停时在被检查页面中高亮此 DOM 节点。需要授予 Chrome debugger 权限，浏览器可能显示正在调试的提示。"
   }
 }
