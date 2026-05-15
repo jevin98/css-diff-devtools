@@ -427,26 +427,26 @@ const PropertyNode = defineComponent({
                         <div class="mb-2 font-semibold text-foreground">
                           {{ t('elementDetails') }}
                         </div>
-                        <dl class="grid grid-cols-[44px_minmax(0,1fr)] gap-x-2 gap-y-1">
-                          <dt class="text-muted-foreground">
+                        <dl class="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-3 gap-y-1">
+                          <dt class="whitespace-nowrap text-muted-foreground">
                             {{ t('tagName') }}
                           </dt>
                           <dd class="truncate">
                             {{ getElementValue(slot.element?.tag) }}
                           </dd>
-                          <dt class="text-muted-foreground">
+                          <dt class="whitespace-nowrap text-muted-foreground">
                             {{ t('idName') }}
                           </dt>
                           <dd class="truncate">
                             {{ getElementValue(slot.element?.id) }}
                           </dd>
-                          <dt class="text-muted-foreground">
+                          <dt class="whitespace-nowrap text-muted-foreground">
                             {{ t('className') }}
                           </dt>
                           <dd class="break-all">
                             {{ getElementValue(slot.element?.class) }}
                           </dd>
-                          <dt class="text-muted-foreground">
+                          <dt class="whitespace-nowrap text-muted-foreground">
                             {{ t('fullName') }}
                           </dt>
                           <dd class="break-all">

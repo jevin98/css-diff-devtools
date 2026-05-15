@@ -290,6 +290,58 @@ test('opens the selected element header info popover on click', async ({ page })
   }
 })
 
+test('keeps the Chinese full name label on one line in element details', async ({ page }) => {
+  test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
+  const server = await serveOutputDir()
+
+  try {
+    await page.addInitScript(() => {
+      localStorage.setItem('css-diff-locale', 'zh_CN')
+    })
+    await mockExtensionApi(page)
+    await page.goto(server.url)
+
+    await page.evaluate(() => {
+      const selected = [
+        {
+          valueType: 'left',
+          tag: 'div',
+          id: '',
+          class: '',
+          style: { color: 'rgb(34, 34, 34)' },
+        },
+        {
+          valueType: 'right',
+          tag: 'span',
+          id: '',
+          class: '',
+          style: { color: 'rgb(0, 0, 0)' },
+        },
+      ]
+
+      ;((window as any).__cssDiffMessageListeners as Array<(data: unknown) => void>)
+        .forEach(callback => callback(selected))
+    })
+
+    await page.getByRole('button', { name: '元素详情' }).first().click()
+
+    const fullNameLabel = page.locator('dt', { hasText: '完整名称' })
+    const labelMetrics = await fullNameLabel.evaluate((element) => {
+      const style = window.getComputedStyle(element)
+
+      return {
+        height: element.getBoundingClientRect().height,
+        lineHeight: Number.parseFloat(style.lineHeight),
+      }
+    })
+
+    expect(labelMetrics.height).toBeLessThanOrEqual(labelMetrics.lineHeight + 1)
+  }
+  finally {
+    await server.close()
+  }
+})
+
 test('uses compact element names in table headers', async ({ page }) => {
   test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
   const server = await serveOutputDir()
