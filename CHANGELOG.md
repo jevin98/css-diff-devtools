@@ -1,3 +1,12 @@
+## <small>0.1.1 (2026-05-15)</small>
+
+* docs: replace README screenshot with demo video (#20) ([cd3b80b](https://github.com/jevin98/css-diff-devtools/commit/cd3b80b)), closes [#20](https://github.com/jevin98/css-diff-devtools/issues/20)
+* ci: add build and zip checks (#22) ([ae0fef5](https://github.com/jevin98/css-diff-devtools/commit/ae0fef5)), closes [#22](https://github.com/jevin98/css-diff-devtools/issues/22)
+* ci: add tag release workflow (#21) ([b99a624](https://github.com/jevin98/css-diff-devtools/commit/b99a624)), closes [#21](https://github.com/jevin98/css-diff-devtools/issues/21)
+* fix: update extension logo icons (#19) ([a1ca626](https://github.com/jevin98/css-diff-devtools/commit/a1ca626)), closes [#19](https://github.com/jevin98/css-diff-devtools/issues/19)
+
+
+
 ## 0.1.0 (2026-05-15)
 
 * feat: add native DOM hover highlight (#18) ([344557d](https://github.com/jevin98/css-diff-devtools/commit/344557d)), closes [#18](https://github.com/jevin98/css-diff-devtools/issues/18)
