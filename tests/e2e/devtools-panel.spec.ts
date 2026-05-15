@@ -145,6 +145,7 @@ test('renders the built DevTools panel shell', async ({ page }) => {
     await expect(page.getByText('Waiting for selection')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Selection' })).toBeVisible()
     await expect(page.getByText('Please select two elements to compare.')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Back to top' })).toHaveCount(0)
 
     const tableContainer = page.locator('.css-diff-scrollbar')
     const tableHeader = tableContainer.locator('thead')

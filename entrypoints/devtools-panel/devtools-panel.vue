@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SelectedElType } from './types'
 import type { Theme } from './utils/theme'
-import { ArrowUp, Copy, Info, Languages, Moon, Search, Sun, Trash2, X } from 'lucide-vue-next'
+import { Copy, Info, Languages, Moon, Search, Sun, Trash2, X } from 'lucide-vue-next'
 import { computed, defineComponent, h, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,7 +23,7 @@ import {
   SUPPORTED_LOCALES,
   t,
 } from './lang'
-import { filterJoin, getDiffValueClass, getNextTheme, resolveLocale, resolveStoredTheme, scrollToTop, THEME_STORAGE_KEY } from './utils'
+import { filterJoin, getDiffValueClass, getNextTheme, resolveLocale, resolveStoredTheme, THEME_STORAGE_KEY } from './utils'
 
 const {
   inputValue,
@@ -38,7 +38,6 @@ const {
 
 const theme = ref<Theme>('light')
 const isDark = computed(() => theme.value === 'dark')
-const tableScrollContainer = ref<HTMLElement | null>(null)
 
 const sourceElement = computed(() => selectedEl.find(el => el.valueType === 'left'))
 const targetElement = computed(() => selectedEl.find(el => el.valueType === 'right'))
@@ -99,10 +98,6 @@ function handleLocaleChange(value: string) {
 
   setLocale(locale)
   localStorage.setItem(LOCALE_STORAGE_KEY, locale)
-}
-
-function handleScrollToTop() {
-  scrollToTop(tableScrollContainer.value)
 }
 
 function getElementTitle(element?: SelectedElType) {
@@ -365,7 +360,7 @@ const PropertyNode = defineComponent({
           </div>
         </div>
 
-        <div ref="tableScrollContainer" class="css-diff-scrollbar min-h-0 flex-1 overflow-auto">
+        <div class="css-diff-scrollbar min-h-0 flex-1 overflow-auto">
           <table
             class="w-full min-w-[860px] border-collapse text-left text-xs"
             :class="!renderCssDiffs.length ? 'h-full' : ''"
@@ -490,16 +485,6 @@ const PropertyNode = defineComponent({
         </div>
       </section>
     </section>
-
-    <Button
-      variant="outline"
-      size="icon"
-      class="fixed bottom-6 right-5 h-8 w-8 bg-background/95 shadow-sm"
-      aria-label="Back to top"
-      @click="handleScrollToTop"
-    >
-      <ArrowUp class="h-4 w-4" />
-    </Button>
 
     <Toaster position="top-right" />
   </main>
