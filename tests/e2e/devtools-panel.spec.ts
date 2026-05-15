@@ -183,6 +183,21 @@ test('renders the built DevTools panel shell', async ({ page }) => {
 
     expect(statsBox.height).toBe(languageBox.height)
     expect(themeBox.height).toBe(languageBox.height)
+    expect(languageBox.height).toBe(32)
+
+    const clearSelectionButton = page.getByRole('button', { name: 'Clear Selection' })
+    const filterModeButton = page.getByRole('button', { name: 'Changed only' })
+    const [clearSelectionBox, filterModeBox] = await Promise.all([
+      clearSelectionButton.boundingBox(),
+      filterModeButton.boundingBox(),
+    ])
+
+    if (!clearSelectionBox || !filterModeBox) {
+      throw new Error('Expected page action control layout boxes to be available.')
+    }
+
+    expect(clearSelectionBox.height).toBe(languageBox.height)
+    expect(filterModeBox.height).toBe(languageBox.height)
   }
   finally {
     await server.close()
@@ -316,7 +331,16 @@ test('removes a single selected element from its selection card', async ({ page 
     await expect(page.getByText('chat-input-anchor', { exact: true })).toBeVisible()
     await expect(page.getByRole('cell', { name: 'color' })).toBeVisible()
 
-    await page.getByRole('button', { name: 'Remove Target selection' }).click()
+    const removeTargetButton = page.getByRole('button', { name: 'Remove Target selection' })
+    const removeTargetBox = await removeTargetButton.boundingBox()
+
+    if (!removeTargetBox) {
+      throw new Error('Expected remove target button layout box to be available.')
+    }
+
+    expect(removeTargetBox.height).toBe(32)
+
+    await removeTargetButton.click()
 
     await expect(page.getByText('chat-input-background', { exact: true })).toBeVisible()
     await expect(page.getByText('chat-input-anchor', { exact: true })).not.toBeVisible()
@@ -345,7 +369,16 @@ test('removes a single selected element from its selection card', async ({ page 
         .forEach(callback => callback(selected))
     })
 
-    await page.getByRole('button', { name: 'Remove Source selection' }).click()
+    const removeSourceButton = page.getByRole('button', { name: 'Remove Source selection' })
+    const removeSourceBox = await removeSourceButton.boundingBox()
+
+    if (!removeSourceBox) {
+      throw new Error('Expected remove source button layout box to be available.')
+    }
+
+    expect(removeSourceBox.height).toBe(32)
+
+    await removeSourceButton.click()
 
     await expect(page.getByText('chat-input-background', { exact: true })).not.toBeVisible()
     await expect(page.getByText('chat-input-anchor', { exact: true })).toBeVisible()
@@ -443,7 +476,23 @@ test('filters property names without adding visual spacing inside the match', as
         .forEach(callback => callback(selected))
     })
 
-    await page.getByPlaceholder('Please enter the css property you want to view').fill('alig')
+    const filterInput = page.getByPlaceholder('Please enter the css property you want to view')
+    const filterInputBox = await filterInput.boundingBox()
+
+    if (!filterInputBox) {
+      throw new Error('Expected filter input layout box to be available.')
+    }
+
+    expect(filterInputBox.height).toBe(32)
+
+    await filterInput.fill('alig')
+    const clearFilterBox = await page.getByRole('button', { name: 'Clear filter' }).boundingBox()
+
+    if (!clearFilterBox) {
+      throw new Error('Expected clear filter button layout box to be available.')
+    }
+
+    expect(clearFilterBox.height).toBe(32)
 
     const propertyCell = page.getByRole('cell', { name: 'align-items' })
 

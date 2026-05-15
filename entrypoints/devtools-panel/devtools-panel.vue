@@ -193,7 +193,7 @@ const PropertyNode = defineComponent({
       <div class="flex shrink-0 items-center gap-2">
         <div
           data-testid="header-stats"
-          class="hidden h-9 items-center gap-2 rounded-md border border-border px-3 text-xs text-muted-foreground md:flex"
+          class="hidden h-8 items-center gap-1.5 rounded-md border border-border px-2.5 text-xs text-muted-foreground md:flex"
         >
           <span class="font-medium text-foreground">{{ changedCount }}</span>
           <span>{{ t('changed') }}</span>
@@ -207,11 +207,11 @@ const PropertyNode = defineComponent({
           @update:model-value="handleLocaleChange"
         >
           <SelectTrigger
-            class="h-9 w-[124px] gap-1 px-3"
+            class="w-[116px] gap-1 px-2.5"
             :aria-label="t('switchLanguage')"
             :title="t('switchLanguage')"
           >
-            <Languages class="h-4 w-4" />
+            <Languages class="h-3.5 w-3.5" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -229,12 +229,11 @@ const PropertyNode = defineComponent({
           variant="ghost"
           size="icon"
           data-testid="theme-toggle"
-          class="h-9 w-9"
           :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
           @click="handleToggleTheme"
         >
-          <Sun v-if="isDark" class="h-4 w-4" />
-          <Moon v-else class="h-4 w-4" />
+          <Sun v-if="isDark" class="h-3.5 w-3.5" />
+          <Moon v-else class="h-3.5 w-3.5" />
         </Button>
       </div>
     </header>
@@ -248,7 +247,7 @@ const PropertyNode = defineComponent({
                 {{ t('selection') }}
               </h2>
             </div>
-            <Button variant="ghost" size="sm" class="h-7 px-2" @click="handleClearSelection">
+            <Button variant="ghost" size="sm" @click="handleClearSelection">
               <Trash2 class="h-3.5 w-3.5" />
               <span>{{ t('removeBtn') }}</span>
             </Button>
@@ -276,7 +275,7 @@ const PropertyNode = defineComponent({
                     v-if="slot.element"
                     variant="ghost"
                     size="icon"
-                    class="h-6 w-6 text-muted-foreground hover:text-foreground"
+                    class="text-muted-foreground hover:text-foreground"
                     :aria-label="t('removeSelectedElement', slot.title)"
                     :title="t('removeSelectedElement', slot.title)"
                     @click="handleRemoveSelectedElement(slot.element.valueType)"
@@ -306,7 +305,7 @@ const PropertyNode = defineComponent({
             <Button
               variant="outline"
               size="sm"
-              class="h-7 px-2 text-xs"
+              class="text-xs"
               :aria-pressed="isAllProperty"
               @click="isAllProperty = !isAllProperty"
             >
@@ -318,14 +317,14 @@ const PropertyNode = defineComponent({
             <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               v-model="inputValue"
-              class="h-9 pl-9 pr-9"
+              class="h-8 pl-9 pr-8"
               :placeholder="t('inputPlaceholder')"
             />
             <Button
               v-if="inputValue"
               variant="ghost"
               size="icon"
-              class="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
+              class="absolute right-0 top-1/2 -translate-y-1/2"
               aria-label="Clear filter"
               @click="inputValue = ''"
             >
@@ -357,10 +356,10 @@ const PropertyNode = defineComponent({
             </p>
           </div>
           <div class="flex items-center gap-2 text-xs text-muted-foreground">
-            <span class="rounded-md border border-border px-2 py-1">
+            <span class="flex h-8 items-center rounded-md border border-border px-2.5">
               {{ changedCount }} {{ t('changed') }}
             </span>
-            <span class="rounded-md border border-border px-2 py-1">
+            <span class="flex h-8 items-center rounded-md border border-border px-2.5">
               {{ totalCount }} {{ t('total') }}
             </span>
           </div>
@@ -399,7 +398,7 @@ const PropertyNode = defineComponent({
                       <PopoverTrigger as-child>
                         <button
                           type="button"
-                          class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-background hover:text-foreground"
+                          class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-background hover:text-foreground"
                           :aria-label="t('elementDetails')"
                         >
                           <Info class="h-3.5 w-3.5" />
