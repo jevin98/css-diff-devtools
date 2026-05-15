@@ -173,6 +173,8 @@ test('renders the built DevTools panel shell', async ({ page }) => {
     const headerStats = page.getByTestId('header-stats')
     const languageTrigger = page.getByRole('combobox', { name: 'Switch language' })
     const themeToggle = page.getByTestId('theme-toggle')
+    await expect(languageTrigger.locator('svg.lucide-globe')).toBeVisible()
+    await expect(languageTrigger.locator('svg.lucide-languages')).toHaveCount(0)
     const [statsBox, languageBox, themeBox] = await Promise.all([
       headerStats.boundingBox(),
       languageTrigger.boundingBox(),

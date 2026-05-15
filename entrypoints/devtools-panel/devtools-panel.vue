@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SelectedElType } from './types'
 import type { Theme } from './utils/theme'
-import { Copy, Info, Languages, Moon, Search, Sun, Trash2, X } from 'lucide-vue-next'
+import { Copy, Globe, Info, Moon, Search, Sun, Trash2, X } from 'lucide-vue-next'
 import { computed, defineComponent, h, onMounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -210,7 +210,7 @@ const PropertyNode = defineComponent({
             :aria-label="t('switchLanguage')"
             :title="t('switchLanguage')"
           >
-            <Languages class="h-3.5 w-3.5" />
+            <Globe class="h-3.5 w-3.5" />
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
