@@ -10,7 +10,7 @@ Guidance for coding agents working in this repository.
 
 - Package manager: `pnpm` (`packageManager` is `pnpm@9.14.1`).
 - Extension framework: WXT.
-- UI: Vue 3 single-file components with Element Plus and Tailwind CSS.
+- UI: Vue 3 single-file components with shadcn-vue style components, Reka UI primitives, and Tailwind CSS v4.
 - Localization: WXT/browser `i18n` messages under `public/_locales`.
 - Language: TypeScript with Vue type checking through `vue-tsc`.
 - Formatting and linting: ESLint 9 with `@antfu/eslint-config`; Prettier is intentionally disabled in VS Code.
@@ -27,7 +27,7 @@ Guidance for coding agents working in this repository.
 - `entrypoints/devtools-panel/lang.ts`: typed wrapper around `browser.i18n.getMessage`.
 - `public/_locales/en/messages.json`: English extension and panel messages.
 - `public/_locales/zh_CN/messages.json`: Simplified Chinese extension and panel messages.
-- `assets/main.css`: Tailwind CSS v4 import and small global Element Plus table overrides.
+- `assets/main.css`: Tailwind CSS v4 import, shadcn design tokens, theme variables, and global panel styles.
 - `public/icon/`: extension icons.
 - `.github/renovate.json5`: dependency update policy.
 
@@ -69,7 +69,7 @@ There is no dedicated `lint` or `format` script in `package.json`; use ESLint di
 - Keep Vue component state and browser interaction logic in composables such as `useDevToolsPanel`.
 - Keep pure data helpers in `entrypoints/devtools-panel/utils/`.
 - Preserve the existing i18n structure by updating both `public/_locales/en/messages.json` and `public/_locales/zh_CN/messages.json` when adding user-visible strings.
-- Use Element Plus components consistently with the existing DevTools panel UI.
+- Use local `components/ui/*` shadcn-vue style components for controls.
 - Use Tailwind utility classes for layout and small style adjustments.
 - The existing code relies on WXT/browser extension globals such as `browser`; do not replace them with unrelated APIs without a compatibility reason.
 
@@ -84,7 +84,7 @@ There is no dedicated `lint` or `format` script in `package.json`; use ESLint di
 - Computed styles are normalized by `formatStyle` before comparison.
 - Selected elements are compared as `left` and `right`; a third selection is ignored until the current selection is cleared.
 - Cross-window/tab synchronization is handled by broadcasting through `browser.tabs.sendMessage`.
-- Table rows use color classes to distinguish changed and unchanged CSS properties, and clicking a value cell copies `property: value;`.
+- Table rows use monochrome emphasis to distinguish changed and unchanged CSS properties, and clicking a value cell copies `property: value;`.
 
 ## Pull Request Expectations
 

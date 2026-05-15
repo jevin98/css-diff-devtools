@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import App from './devtools-panel.vue'
-
-import 'element-plus/dist/index.css'
+import 'vue-sonner/style.css'
 
 createApp(App).mount('#app')

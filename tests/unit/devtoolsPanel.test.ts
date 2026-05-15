@@ -8,16 +8,35 @@ describe('devtools-panel', () => {
     await fakeBrowser.tabs.create({ active: true, url: 'https://example.com' })
 
     const messages: Record<string, string> = {
+      allProperties: 'All properties',
+      changed: 'Changed',
+      changedOnly: 'Changed only',
+      className: 'Class',
+      diffs: 'Diffs',
+      elementDetails: 'Element details',
+      emptyElement: 'No element selected',
+      filter: 'Filter',
+      fullName: 'Full',
+      idName: 'ID',
       info: 'Select two elements in the Elements tab of the DevTools panel and the style differences will be shown below.',
       inputPlaceholder: 'Please enter the css property you want to view',
       isAllProperty: 'Show all',
       property: 'property',
+      readyToCompare: 'Ready to compare',
       removeBtn: 'Clear Selection',
       selectedInfo: 'Please select two elements to compare.',
+      selection: 'Selection',
+      sourceElement: 'Source',
       tableColumnInfo: 'The header name is concatenated from the DOM\'s `TagName`, `Id`, and `Class` attributes using `$$$$`.',
+      tagName: 'Tag',
+      targetElement: 'Target',
+      total: 'Total',
+      undefinedStyleValue: 'Undefined',
+      waitingSelection: 'Waiting for selection',
     }
 
     vi.spyOn(fakeBrowser.i18n, 'getMessage').mockImplementation((key: string) => messages[key] ?? key)
+    vi.spyOn(fakeBrowser.i18n, 'getUILanguage').mockReturnValue('en')
 
     ;(globalThis as any).browser.devtools = {
       panels: {
@@ -37,23 +56,16 @@ describe('devtools-panel', () => {
     const wrapper = mount(DevtoolsPanel, {
       global: {
         stubs: {
-          ElBacktop: true,
-          ElButton: { template: '<button><slot /></button>' },
-          ElCheckbox: true,
-          ElIcon: { template: '<span><slot /></span>' },
-          ElInput: true,
-          ElOption: true,
-          ElSelect: { template: '<select><slot /></select>' },
-          ElTable: { template: '<table><slot /></table>' },
-          ElTableColumn: true,
-          ElText: { template: '<p><slot /></p>' },
-          ElTooltip: { template: '<span><slot /></span>' },
+          Toaster: true,
         },
       },
     })
 
     expect(wrapper.text()).toContain('DOM Diff')
-    expect(wrapper.text()).toContain('Select two elements in the Elements tab')
+    expect(wrapper.text()).toContain('Waiting for selection')
+    expect(wrapper.text()).toContain('Selection')
+    expect(wrapper.text()).toContain('Source')
+    expect(wrapper.text()).toContain('Target')
     expect(wrapper.text()).toContain('Please select two elements to compare.')
   })
 })

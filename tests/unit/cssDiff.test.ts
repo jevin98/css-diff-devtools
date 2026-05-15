@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { compareStyles, getVisibleCssDiffs } from '../../entrypoints/devtools-panel/utils/cssDiff'
+import { UNDEFINED_STYLE_VALUE } from '../../entrypoints/devtools-panel/utils/diff'
 
 describe('compareStyles', () => {
   it('marks equal and different CSS properties across the two selections', () => {
@@ -17,9 +18,10 @@ describe('compareStyles', () => {
       { color: 'red' },
       { margin: '4px' },
     )).toEqual([
-      { property: 'color', left: 'red', right: '未定义', isDiff: true },
-      { property: 'margin', left: '未定义', right: '4px', isDiff: true },
+      { property: 'color', left: 'red', right: UNDEFINED_STYLE_VALUE, isDiff: true },
+      { property: 'margin', left: UNDEFINED_STYLE_VALUE, right: '4px', isDiff: true },
     ])
+    expect(UNDEFINED_STYLE_VALUE).not.toBe('未定义')
   })
 })
 

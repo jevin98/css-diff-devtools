@@ -1,11 +1,10 @@
 import type { CssDiffsType } from '../types'
+import { UNDEFINED_STYLE_VALUE } from './diff'
 
 export type CssStyleRecord = Record<string, string | null | undefined>
 
-const MISSING_STYLE_VALUE = '未定义'
-
 function normalizeStyleValue(value: string | null | undefined) {
-  return value || MISSING_STYLE_VALUE
+  return value || UNDEFINED_STYLE_VALUE
 }
 
 export function compareStyles(

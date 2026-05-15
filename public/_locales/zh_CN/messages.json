@@ -5,11 +5,77 @@
   "extDescription": {
     "message": "一个用于比较 CSS 差异的浏览器扩展。"
   },
+  "switchLanguage": {
+    "message": "切换语言"
+  },
+  "switchToDarkTheme": {
+    "message": "切换到深色主题"
+  },
+  "switchToLightTheme": {
+    "message": "切换到浅色主题"
+  },
+  "selection": {
+    "message": "选择"
+  },
+  "sourceElement": {
+    "message": "源元素"
+  },
+  "targetElement": {
+    "message": "目标元素"
+  },
+  "emptyElement": {
+    "message": "未选择元素"
+  },
+  "waitingSelection": {
+    "message": "等待选择"
+  },
+  "readyToCompare": {
+    "message": "可以比较"
+  },
+  "diffs": {
+    "message": "差异"
+  },
+  "changed": {
+    "message": "变更"
+  },
+  "total": {
+    "message": "总数"
+  },
+  "undefinedStyleValue": {
+    "message": "未定义"
+  },
+  "filter": {
+    "message": "筛选"
+  },
+  "fullName": {
+    "message": "完整名称"
+  },
+  "changedOnly": {
+    "message": "仅差异"
+  },
+  "allProperties": {
+    "message": "全部属性"
+  },
+  "elementDetails": {
+    "message": "元素详情"
+  },
+  "tagName": {
+    "message": "标签"
+  },
+  "idName": {
+    "message": "ID"
+  },
+  "className": {
+    "message": "Class"
+  },
   "info": {
     "message": "在 DevTools 面板的 Elements 选项卡中选择两个元素，样式差异将显示在下面。"
   },
   "removeBtn": {
     "message": "清除选择"
+  },
+  "removeSelectedElement": {
+    "message": "删除$1选择"
   },
   "selectedInfo": {
     "message": "请选择两个元素进行比较。"
@@ -25,6 +91,9 @@
   },
   "copyInfo": {
     "message": "复制成功"
+  },
+  "clearFilter": {
+    "message": "清空筛选"
   },
   "inputPlaceholder": {
     "message": "请输入需要查看的 css 属性"

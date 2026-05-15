@@ -5,11 +5,77 @@
   "extDescription": {
     "message": "A browser extension that compares different CSS."
   },
+  "switchLanguage": {
+    "message": "Switch language"
+  },
+  "switchToDarkTheme": {
+    "message": "Switch to dark theme"
+  },
+  "switchToLightTheme": {
+    "message": "Switch to light theme"
+  },
+  "selection": {
+    "message": "Selection"
+  },
+  "sourceElement": {
+    "message": "Source"
+  },
+  "targetElement": {
+    "message": "Target"
+  },
+  "emptyElement": {
+    "message": "No element selected"
+  },
+  "waitingSelection": {
+    "message": "Waiting for selection"
+  },
+  "readyToCompare": {
+    "message": "Ready to compare"
+  },
+  "diffs": {
+    "message": "Diffs"
+  },
+  "changed": {
+    "message": "Changed"
+  },
+  "total": {
+    "message": "Total"
+  },
+  "undefinedStyleValue": {
+    "message": "Undefined"
+  },
+  "filter": {
+    "message": "Filter"
+  },
+  "fullName": {
+    "message": "Full"
+  },
+  "changedOnly": {
+    "message": "Changed only"
+  },
+  "allProperties": {
+    "message": "All properties"
+  },
+  "elementDetails": {
+    "message": "Element details"
+  },
+  "tagName": {
+    "message": "Tag"
+  },
+  "idName": {
+    "message": "ID"
+  },
+  "className": {
+    "message": "Class"
+  },
   "info": {
     "message": "Select two elements in the Elements tab of the DevTools panel and the style differences will be shown below."
   },
   "removeBtn": {
     "message": "Clear Selection"
+  },
+  "removeSelectedElement": {
+    "message": "Remove $1 selection"
   },
   "selectedInfo": {
     "message": "Please select two elements to compare."
@@ -25,6 +91,9 @@
   },
   "copyInfo": {
     "message": "Copy Success"
+  },
+  "clearFilter": {
+    "message": "Clear filter"
   },
   "inputPlaceholder": {
     "message": "Please enter the css property you want to view"

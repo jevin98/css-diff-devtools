@@ -1,9 +1,9 @@
 import type { CssDiffsType, SelectedElType } from '../types'
 import { useClipboard } from '@vueuse/core'
-import { ElMessage } from 'element-plus'
+import { toast } from 'vue-sonner'
 import { t } from '../lang'
 import SM from '../message'
-import { compareStyles, formatStyle, type FormatStyleValue, getVisibleCssDiffs } from '../utils'
+import { compareStyles, formatStyle, type FormatStyleValue, getVisibleCssDiffs, UNDEFINED_STYLE_VALUE } from '../utils'
 
 export function useDevToolsPanel() {
   const inputValue = ref('')
@@ -32,9 +32,11 @@ export function useDevToolsPanel() {
         `(${formatStyle.toString()})($0)`,
         (result: FormatStyleValue, isException) => {
           if (!isException && result != null && isLoadComplete.value) {
-            const valueType = !selectedEl.length ? 'left' : 'right'
+            const valueType = getAvailableValueType()
 
-            saveSelectedEl({ ...result, valueType })
+            if (valueType) {
+              saveSelectedEl({ ...result, valueType })
+            }
           }
         },
       )
@@ -54,11 +56,14 @@ export function useDevToolsPanel() {
       if (selectedEl.length === 2) {
         compareSelectedEl()
       }
+      else {
+        cssDiffs.length = 0
+      }
     })
   })
 
   function saveSelectedEl(result: SelectedElType) {
-    if (selectedEl.length === 2) {
+    if (!getAvailableValueType()) {
       return
     }
 
@@ -80,8 +85,43 @@ export function useDevToolsPanel() {
     SM.send([])
   }
 
+  function handleRemoveSelectedElement(valueType: SelectedElType['valueType']) {
+    const index = selectedEl.findIndex(element => element.valueType === valueType)
+
+    if (index === -1) {
+      return
+    }
+
+    selectedEl.splice(index, 1)
+    cssDiffs.length = 0
+
+    // Send selected data to other windows/tabs
+    SM.send(selectedEl)
+  }
+
+  function getAvailableValueType(): SelectedElType['valueType'] | null {
+    if (!selectedEl.some(element => element.valueType === 'left')) {
+      return 'left'
+    }
+
+    if (!selectedEl.some(element => element.valueType === 'right')) {
+      return 'right'
+    }
+
+    return null
+  }
+
   function compareSelectedEl() {
-    const [{ style: styles1 = {} }, { style: styles2 = {} }] = selectedEl
+    const leftElement = selectedEl.find(element => element.valueType === 'left')
+    const rightElement = selectedEl.find(element => element.valueType === 'right')
+
+    if (!leftElement || !rightElement) {
+      cssDiffs.length = 0
+      return
+    }
+
+    const { style: styles1 = {} } = leftElement
+    const { style: styles2 = {} } = rightElement
 
     cssDiffs.length = 0
     cssDiffs.push(...compareStyles(styles1, styles2))
@@ -94,57 +134,29 @@ export function useDevToolsPanel() {
     })
   })
 
-  function onTableCellClassName({ columnIndex }: { columnIndex: number }) {
-    return !columnIndex ? 'text-[var(--el-table-text-color)] cursor-auto' : ''
-  }
+  async function handleCopyStyle(row: CssDiffsType, valueType: 'left' | 'right') {
+    const value = row[valueType] === UNDEFINED_STYLE_VALUE ? t('undefinedStyleValue') : row[valueType]
+    const source = `${row.property}: ${value};`
 
-  function onTableRowClassName({ row }: { row: CssDiffsType }) {
-    if (row.isDiff) {
-      return '!bg-[#ffe6e6] text-[red] cursor-pointer'
-    }
-    else {
-      return '!bg-[#e6ffe6] text-[green] cursor-pointer'
-    }
-  }
+    const { copy } = useClipboard({
+      read: true,
+      source,
+      legacy: true,
+    })
 
-  function handleCopyStyle(row: CssDiffsType, column: any) {
-    if (column.property !== 'property') {
-      const source = `${row.property}: ${row[column.property as 'left' | 'right']};`
-
-      const { text, copied, copy } = useClipboard({
-        read: true,
-        source,
-        legacy: true,
-      })
-
-      copy(source)
-
-      watch(
-        () => copied.value,
-        (copied) => {
-          if (copied) {
-            ElMessage({
-              message: `${t('copyInfo')} > ${text.value}`,
-              type: 'success',
-            })
-          }
-        },
-        {
-          immediate: true,
-        },
-      )
-    }
+    await copy(source)
+    toast.success(`${t('copyInfo')} > ${source}`)
   }
 
   return {
     inputValue,
 
     selectedEl,
+    cssDiffs,
     renderCssDiffs,
     isAllProperty,
     handleClearSelection,
-    onTableCellClassName,
-    onTableRowClassName,
+    handleRemoveSelectedElement,
     handleCopyStyle,
   }
 }
