@@ -8,7 +8,7 @@
   <p>CSS-Diff is a DevTools sidebar extension for comparing the computed CSS of two DOM elements. It is built for frontend debugging: select two elements in the Elements panel, then inspect what changed, search for a property, and copy a CSS declaration with one click.</p>
 </div>
 
-![Screenshot](https://github.com/jevin98/css-diff-devtools/blob/main/img/screenshot.png?raw=true)
+https://github.com/user-attachments/assets/1766e65e-fa31-4095-93d1-f247daa0e8e7
 
 ## Why CSS-Diff?
 
