@@ -1,8 +1,12 @@
-# CSS-Diff
+<div align="center">
+  <img src="./img/logo.png" alt="CSS-Diff logo" width="160">
 
-[English](./README.md) | 简体中文
+  <h1>CSS-Diff</h1>
 
-CSS-Diff 是一个用于比较两个 DOM 元素计算后 CSS 的 DevTools 侧边栏扩展。它面向前端调试场景：在 Elements 面板中选择两个元素，即可查看哪些样式发生了变化、搜索指定属性，并一键复制 CSS 声明。
+  <p><a href="./README.md">English</a> | 简体中文</p>
+
+  <p>CSS-Diff 是一个用于比较两个 DOM 元素计算后 CSS 的 DevTools 侧边栏扩展。它面向前端调试场景：在 Elements 面板中选择两个元素，即可查看哪些样式发生了变化、搜索指定属性，并一键复制 CSS 声明。</p>
+</div>
 
 ![Screenshot](https://github.com/Jevin0/css-diff-devtools/blob/main/img/screenshot.png?raw=true)
 

@@ -1,8 +1,12 @@
-# CSS-Diff
+<div align="center">
+  <img src="./img/logo.png" alt="CSS-Diff logo" width="160">
 
-English | [简体中文](./README.zh-CN.md)
+  <h1>CSS-Diff</h1>
 
-CSS-Diff is a DevTools sidebar extension for comparing the computed CSS of two DOM elements. It is built for frontend debugging: select two elements in the Elements panel, then inspect what changed, search for a property, and copy a CSS declaration with one click.
+  <p>English | <a href="./README.zh-CN.md">简体中文</a></p>
+
+  <p>CSS-Diff is a DevTools sidebar extension for comparing the computed CSS of two DOM elements. It is built for frontend debugging: select two elements in the Elements panel, then inspect what changed, search for a property, and copy a CSS declaration with one click.</p>
+</div>
 
 ![Screenshot](https://github.com/Jevin0/css-diff-devtools/blob/main/img/screenshot.png?raw=true)
 
