@@ -97,5 +97,8 @@
   },
   "inputPlaceholder": {
     "message": "Please enter the css property you want to view"
+  },
+  "nativeHoverTooltip": {
+    "message": "Hover to highlight this DOM node in the inspected page. Requires Chrome debugger permission and may show a browser debugging notice."
   }
 }
