@@ -143,6 +143,28 @@ test('renders the built DevTools panel shell', async ({ page }) => {
     await expect(page.getByText('Waiting for selection')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Selection' })).toBeVisible()
     await expect(page.getByText('Please select two elements to compare.')).toBeVisible()
+
+    const tableContainer = page.locator('.css-diff-scrollbar')
+    const tableHeader = tableContainer.locator('thead')
+    const emptyState = page.getByTestId('diff-empty-state')
+    const [containerBox, headerBox, emptyBox] = await Promise.all([
+      tableContainer.boundingBox(),
+      tableHeader.boundingBox(),
+      emptyState.boundingBox(),
+    ])
+
+    if (!containerBox || !headerBox || !emptyBox) {
+      throw new Error('Expected table empty state layout boxes to be available.')
+    }
+
+    const bodyTop = headerBox.y + headerBox.height
+    const bodyCenterY = bodyTop + ((containerBox.y + containerBox.height - bodyTop) / 2)
+    const bodyCenterX = containerBox.x + (containerBox.width / 2)
+    const emptyCenterY = emptyBox.y + (emptyBox.height / 2)
+    const emptyCenterX = emptyBox.x + (emptyBox.width / 2)
+
+    expect(Math.abs(emptyCenterY - bodyCenterY)).toBeLessThanOrEqual(2)
+    expect(Math.abs(emptyCenterX - bodyCenterX)).toBeLessThanOrEqual(2)
   }
   finally {
     await server.close()

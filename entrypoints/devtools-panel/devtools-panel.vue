@@ -37,7 +37,6 @@ const {
 
 const theme = ref<Theme>('light')
 const isDark = computed(() => theme.value === 'dark')
-const tableColumnCount = computed(() => selectedEl.length + 1)
 const tableScrollContainer = ref<HTMLElement | null>(null)
 
 const sourceElement = computed(() => selectedEl.find(el => el.valueType === 'left'))
@@ -52,6 +51,7 @@ const selectionSlots = computed(() => [
   { element: sourceElement.value, index: '01', key: 'source', title: t('sourceElement') },
   { element: targetElement.value, index: '02', key: 'target', title: t('targetElement') },
 ])
+const tableColumnCount = computed(() => selectionSlots.value.length + 1)
 
 function getPropertyHighlightParts(text: string, query: string) {
   if (!query) {
@@ -326,7 +326,10 @@ const PropertyNode = defineComponent({
         </div>
 
         <div ref="tableScrollContainer" class="css-diff-scrollbar min-h-0 flex-1 overflow-auto">
-          <table class="w-full min-w-[860px] border-collapse text-left text-xs">
+          <table
+            class="w-full min-w-[860px] border-collapse text-left text-xs"
+            :class="!renderCssDiffs.length ? 'h-full' : ''"
+          >
             <thead class="sticky top-0 z-10 border-b border-border bg-muted/80 text-muted-foreground backdrop-blur">
               <tr>
                 <th class="w-[240px] px-3 py-2 font-medium">
@@ -388,12 +391,14 @@ const PropertyNode = defineComponent({
             </thead>
 
             <tbody>
-              <tr v-if="!renderCssDiffs.length">
+              <tr v-if="!renderCssDiffs.length" class="h-full">
                 <td
                   :colspan="tableColumnCount"
-                  class="px-3 py-12 text-center text-sm text-muted-foreground"
+                  class="h-full px-3 text-center align-middle text-sm text-muted-foreground"
                 >
-                  {{ t('selectedInfo') }}
+                  <span data-testid="diff-empty-state">
+                    {{ t('selectedInfo') }}
+                  </span>
                 </td>
               </tr>
 
