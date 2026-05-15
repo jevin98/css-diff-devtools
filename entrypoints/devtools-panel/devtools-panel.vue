@@ -53,6 +53,36 @@ const selectionSlots = computed(() => [
   { element: targetElement.value, index: '02', key: 'target', title: t('targetElement') },
 ])
 
+function getPropertyHighlightParts(text: string, query: string) {
+  if (!query) {
+    return [{ isMatch: false, text }]
+  }
+
+  const parts: Array<{ isMatch: boolean, text: string }> = []
+  const lowerText = text.toLowerCase()
+  const lowerQuery = query.toLowerCase()
+  let cursor = 0
+  let index = lowerText.indexOf(lowerQuery, cursor)
+
+  while (index !== -1) {
+    if (index > cursor) {
+      parts.push({ isMatch: false, text: text.slice(cursor, index) })
+    }
+
+    const end = index + query.length
+
+    parts.push({ isMatch: true, text: text.slice(index, end) })
+    cursor = end
+    index = lowerText.indexOf(lowerQuery, cursor)
+  }
+
+  if (cursor < text.length) {
+    parts.push({ isMatch: false, text: text.slice(cursor) })
+  }
+
+  return parts
+}
+
 function applyTheme(value: Theme) {
   document.documentElement.classList.toggle('dark', value === 'dark')
 }
@@ -101,14 +131,14 @@ const PropertyNode = defineComponent({
         return h('span', props.text)
       }
 
-      const escapedInput = inputValue.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const reg = new RegExp(`(${escapedInput})`, 'gi')
-      const text = props.text.replace(
-        reg,
-        '<span class="rounded bg-background px-0.5 font-semibold text-foreground">$1</span>',
+      return h(
+        'span',
+        { class: 'inline' },
+        getPropertyHighlightParts(props.text, inputValue.value).map(part => part.isMatch
+          ? h('mark', { class: 'bg-transparent font-semibold text-foreground underline decoration-foreground/30 underline-offset-2' }, part.text)
+          : part.text,
+        ),
       )
-
-      return h('span', { innerHTML: text })
     }
   },
 })

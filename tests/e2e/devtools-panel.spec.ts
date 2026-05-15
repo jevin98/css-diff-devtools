@@ -193,3 +193,53 @@ test('opens the selected element header info popover on click', async ({ page })
     await server.close()
   }
 })
+
+test('filters property names without adding visual spacing inside the match', async ({ page }) => {
+  test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
+  const server = await serveOutputDir()
+
+  try {
+    await mockExtensionApi(page)
+    await page.goto(server.url)
+
+    await page.evaluate(() => {
+      const selected = [
+        {
+          valueType: 'left',
+          tag: 'div',
+          id: '',
+          class: 'chat-input-tool',
+          style: { 'align-items': 'normal' },
+        },
+        {
+          valueType: 'right',
+          tag: 'div',
+          id: '',
+          class: 'chat-input-tool',
+          style: { 'align-items': 'center' },
+        },
+      ]
+
+      ;((window as any).__cssDiffMessageListeners as Array<(data: unknown) => void>)
+        .forEach(callback => callback(selected))
+    })
+
+    await page.getByPlaceholder('Please enter the css property you want to view').fill('alig')
+
+    const propertyCell = page.getByRole('cell', { name: 'align-items' })
+
+    await expect(propertyCell).toBeVisible()
+    await expect(propertyCell).toHaveText('align-items')
+
+    const highlightPadding = await propertyCell.locator('mark').evaluate((element) => {
+      const style = getComputedStyle(element)
+
+      return `${style.paddingLeft} ${style.paddingRight}`
+    })
+
+    expect(highlightPadding).toBe('0px 0px')
+  }
+  finally {
+    await server.close()
+  }
+})
