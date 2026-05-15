@@ -169,7 +169,10 @@ const PropertyNode = defineComponent({
       </div>
 
       <div class="flex shrink-0 items-center gap-2">
-        <div class="hidden items-center gap-2 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground md:flex">
+        <div
+          data-testid="header-stats"
+          class="hidden h-9 items-center gap-2 rounded-md border border-border px-3 text-xs text-muted-foreground md:flex"
+        >
           <span class="font-medium text-foreground">{{ changedCount }}</span>
           <span>{{ t('changed') }}</span>
           <span class="text-border">/</span>
@@ -182,7 +185,7 @@ const PropertyNode = defineComponent({
           @update:model-value="handleLocaleChange"
         >
           <SelectTrigger
-            class="h-8 w-[124px] gap-1 px-2"
+            class="h-9 w-[124px] gap-1 px-3"
             :aria-label="t('switchLanguage')"
             :title="t('switchLanguage')"
           >
@@ -203,6 +206,8 @@ const PropertyNode = defineComponent({
         <Button
           variant="ghost"
           size="icon"
+          data-testid="theme-toggle"
+          class="h-9 w-9"
           :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
           @click="handleToggleTheme"
         >

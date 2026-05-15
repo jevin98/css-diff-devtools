@@ -166,6 +166,22 @@ test('renders the built DevTools panel shell', async ({ page }) => {
 
     expect(Math.abs(emptyCenterY - bodyCenterY)).toBeLessThanOrEqual(2)
     expect(Math.abs(emptyCenterX - bodyCenterX)).toBeLessThanOrEqual(2)
+
+    const headerStats = page.getByTestId('header-stats')
+    const languageTrigger = page.getByRole('combobox', { name: 'Switch language' })
+    const themeToggle = page.getByTestId('theme-toggle')
+    const [statsBox, languageBox, themeBox] = await Promise.all([
+      headerStats.boundingBox(),
+      languageTrigger.boundingBox(),
+      themeToggle.boundingBox(),
+    ])
+
+    if (!statsBox || !languageBox || !themeBox) {
+      throw new Error('Expected header control layout boxes to be available.')
+    }
+
+    expect(statsBox.height).toBe(languageBox.height)
+    expect(themeBox.height).toBe(languageBox.height)
   }
   finally {
     await server.close()
