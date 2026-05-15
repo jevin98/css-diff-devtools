@@ -8,7 +8,7 @@
   <p>CSS-Diff 是一个用于比较两个 DOM 元素计算后 CSS 的 DevTools 侧边栏扩展。它面向前端调试场景：在 Elements 面板中选择两个元素，即可查看哪些样式发生了变化、搜索指定属性，并一键复制 CSS 声明。</p>
 </div>
 
-![Screenshot](https://github.com/Jevin0/css-diff-devtools/blob/main/img/screenshot.png?raw=true)
+![Screenshot](https://github.com/jevin98/css-diff-devtools/blob/main/img/screenshot.png?raw=true)
 
 ## 为什么使用 CSS-Diff？
 
@@ -29,7 +29,7 @@
 > [!WARNING]
 > CSS-Diff 目前暂未上架浏览器扩展商店。
 
-从 [Releases](https://github.com/Jevin0/css-diff-devtools/releases) 下载打包后的 zip 文件，然后在浏览器扩展程序页面中手动安装或加载。
+从 [Releases](https://github.com/jevin98/css-diff-devtools/releases) 下载打包后的 zip 文件，然后在浏览器扩展程序页面中手动安装或加载。
 
 ## 使用方法
 

@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024 Jevin <https://github.com/Jevin0>
+Copyright (c) 2024-2026 Jevin <https://github.com/jevin98>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
