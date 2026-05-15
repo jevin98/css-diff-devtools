@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prepare WXT types
+        run: pnpm exec wxt prepare
+
+      - name: Lint
+        run: pnpm exec eslint .
+
+      - name: Type-check
+        run: pnpm compile
+
+      - name: Unit tests
+        run: pnpm test:unit
+
+      - name: Package extensions
+        run: pnpm zip
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          shopt -s nullglob
+          assets=(.output/*.zip)
+
+          if [ ${#assets[@]} -eq 0 ]; then
+            echo "No release assets found in .output" >&2
+            exit 1
+          fi
+
+          gh release create "$TAG_NAME" "${assets[@]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG_NAME" \
+            --generate-notes \
+            --verify-tag
