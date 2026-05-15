@@ -35,6 +35,9 @@
   "total": {
     "message": "Total"
   },
+  "undefinedStyleValue": {
+    "message": "Undefined"
+  },
   "filter": {
     "message": "Filter"
   },

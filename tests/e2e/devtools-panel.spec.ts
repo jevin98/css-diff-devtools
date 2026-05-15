@@ -85,6 +85,7 @@ async function mockExtensionApi(page: Page) {
       tagName: 'Tag',
       targetElement: 'Target',
       total: 'Total',
+      undefinedStyleValue: 'Undefined',
       waitingSelection: 'Waiting for selection',
     }
     const runtimeMessageListeners: Array<(data: unknown) => void> = []
@@ -336,6 +337,45 @@ test('keeps the Chinese full name label on one line in element details', async (
     })
 
     expect(labelMetrics.height).toBeLessThanOrEqual(labelMetrics.lineHeight + 1)
+  }
+  finally {
+    await server.close()
+  }
+})
+
+test('localizes missing CSS values in English mode', async ({ page }) => {
+  test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
+  const server = await serveOutputDir()
+
+  try {
+    await mockExtensionApi(page)
+    await page.goto(server.url)
+
+    await page.evaluate(() => {
+      const selected = [
+        {
+          valueType: 'left',
+          tag: 'i',
+          id: '',
+          class: 'c-icon',
+          style: {},
+        },
+        {
+          valueType: 'right',
+          tag: 'use',
+          id: '',
+          class: 'txp_svg_symbol',
+          style: { '--bg-page-gray': '#f5f5f5' },
+        },
+      ]
+
+      ;((window as any).__cssDiffMessageListeners as Array<(data: unknown) => void>)
+        .forEach(callback => callback(selected))
+    })
+
+    await expect(page.getByRole('cell', { name: '--bg-page-gray' })).toBeVisible()
+    await expect(page.getByText('Undefined', { exact: true })).toBeVisible()
+    await expect(page.getByText('未定义', { exact: true })).toHaveCount(0)
   }
   finally {
     await server.close()

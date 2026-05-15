@@ -29,6 +29,7 @@ export type MessageKey =
   | 'tagName'
   | 'targetElement'
   | 'total'
+  | 'undefinedStyleValue'
   | 'copyInfo'
   | 'inputPlaceholder'
   | 'waitingSelection'

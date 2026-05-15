@@ -3,7 +3,7 @@ import { useClipboard } from '@vueuse/core'
 import { toast } from 'vue-sonner'
 import { t } from '../lang'
 import SM from '../message'
-import { compareStyles, formatStyle, type FormatStyleValue, getVisibleCssDiffs } from '../utils'
+import { compareStyles, formatStyle, type FormatStyleValue, getVisibleCssDiffs, UNDEFINED_STYLE_VALUE } from '../utils'
 
 export function useDevToolsPanel() {
   const inputValue = ref('')
@@ -135,7 +135,8 @@ export function useDevToolsPanel() {
   })
 
   async function handleCopyStyle(row: CssDiffsType, valueType: 'left' | 'right') {
-    const source = `${row.property}: ${row[valueType]};`
+    const value = row[valueType] === UNDEFINED_STYLE_VALUE ? t('undefinedStyleValue') : row[valueType]
+    const source = `${row.property}: ${value};`
 
     const { copy } = useClipboard({
       read: true,

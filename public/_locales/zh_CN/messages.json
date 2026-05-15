@@ -35,6 +35,9 @@
   "total": {
     "message": "总数"
   },
+  "undefinedStyleValue": {
+    "message": "未定义"
+  },
   "filter": {
     "message": "筛选"
   },

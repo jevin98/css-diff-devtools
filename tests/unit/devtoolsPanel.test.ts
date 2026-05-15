@@ -31,6 +31,7 @@ describe('devtools-panel', () => {
       tagName: 'Tag',
       targetElement: 'Target',
       total: 'Total',
+      undefinedStyleValue: 'Undefined',
       waitingSelection: 'Waiting for selection',
     }
 

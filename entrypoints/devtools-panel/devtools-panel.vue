@@ -23,7 +23,7 @@ import {
   SUPPORTED_LOCALES,
   t,
 } from './lang'
-import { filterJoin, getDiffValueClass, getNextTheme, getSystemTheme, resolveAppliedTheme, resolveLocale, resolveStoredTheme, THEME_MEDIA_QUERY, THEME_STORAGE_KEY } from './utils'
+import { filterJoin, getDiffValueClass, getNextTheme, getSystemTheme, resolveAppliedTheme, resolveLocale, resolveStoredTheme, THEME_MEDIA_QUERY, THEME_STORAGE_KEY, UNDEFINED_STYLE_VALUE } from './utils'
 
 const logoUrl = new URL('../../img/logo.png', import.meta.url).href
 
@@ -143,6 +143,10 @@ function getElementHeaderLabel(element?: SelectedElType) {
 
 function getElementValue(value?: string) {
   return value || '-'
+}
+
+function getStyleValueLabel(value: string) {
+  return value === UNDEFINED_STYLE_VALUE ? t('undefinedStyleValue') : value
 }
 
 onMounted(() => {
@@ -495,7 +499,7 @@ const PropertyNode = defineComponent({
                       class="break-all rounded-sm border px-2 py-1 leading-none"
                       :class="slot.element ? getDiffValueClass(row, slot.element.valueType) : 'border-border bg-background text-muted-foreground'"
                     >
-                      {{ slot.element ? row[slot.element.valueType] : '-' }}
+                      {{ slot.element ? getStyleValueLabel(row[slot.element.valueType]) : '-' }}
                     </span>
                     <Copy
                       v-if="slot.element"

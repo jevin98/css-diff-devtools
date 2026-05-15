@@ -2,7 +2,7 @@ import type { CssDiffsType } from '../types'
 
 export type DiffValueTone = 'changed' | 'missing' | 'muted'
 
-export const UNDEFINED_STYLE_VALUE = '未定义'
+export const UNDEFINED_STYLE_VALUE = '__CSS_DIFF_UNDEFINED__'
 
 export function getDiffValueTone(row: CssDiffsType, valueType: 'left' | 'right'): DiffValueTone {
   if (!row.isDiff) {
