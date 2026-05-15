@@ -75,6 +75,7 @@ async function mockExtensionApi(page: Page) {
       isAllProperty: 'Show all',
       property: 'property',
       readyToCompare: 'Ready to compare',
+      removeSelectedElement: 'Remove $1 selection',
       removeBtn: 'Clear Selection',
       selectedInfo: 'Please select two elements to compare.',
       selection: 'Selection',
@@ -210,6 +211,80 @@ test('opens the selected element header info popover on click', async ({ page })
 
     await expect(detailsDialog.getByText('Element details')).toBeVisible()
     await expect(detailsDialog.getByText('nav-link', { exact: true })).toBeVisible()
+  }
+  finally {
+    await server.close()
+  }
+})
+
+test('removes a single selected element from its selection card', async ({ page }) => {
+  test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
+  const server = await serveOutputDir()
+
+  try {
+    await mockExtensionApi(page)
+    await page.goto(server.url)
+
+    await page.evaluate(() => {
+      const selected = [
+        {
+          valueType: 'left',
+          tag: 'div',
+          id: '',
+          class: 'chat-input-background',
+          style: { color: 'rgb(34, 34, 34)' },
+        },
+        {
+          valueType: 'right',
+          tag: 'div',
+          id: '',
+          class: 'chat-input-anchor',
+          style: { color: 'rgb(0, 0, 0)' },
+        },
+      ]
+
+      ;((window as any).__cssDiffMessageListeners as Array<(data: unknown) => void>)
+        .forEach(callback => callback(selected))
+    })
+
+    await expect(page.getByText('chat-input-background', { exact: true })).toBeVisible()
+    await expect(page.getByText('chat-input-anchor', { exact: true })).toBeVisible()
+    await expect(page.getByRole('cell', { name: 'color' })).toBeVisible()
+
+    await page.getByRole('button', { name: 'Remove Target selection' }).click()
+
+    await expect(page.getByText('chat-input-background', { exact: true })).toBeVisible()
+    await expect(page.getByText('chat-input-anchor', { exact: true })).not.toBeVisible()
+    await expect(page.getByText('Please select two elements to compare.')).toBeVisible()
+    await expect(page.getByRole('cell', { name: 'color' })).not.toBeVisible()
+
+    await page.evaluate(() => {
+      const selected = [
+        {
+          valueType: 'left',
+          tag: 'div',
+          id: '',
+          class: 'chat-input-background',
+          style: { color: 'rgb(34, 34, 34)' },
+        },
+        {
+          valueType: 'right',
+          tag: 'div',
+          id: '',
+          class: 'chat-input-anchor',
+          style: { color: 'rgb(0, 0, 0)' },
+        },
+      ]
+
+      ;((window as any).__cssDiffMessageListeners as Array<(data: unknown) => void>)
+        .forEach(callback => callback(selected))
+    })
+
+    await page.getByRole('button', { name: 'Remove Source selection' }).click()
+
+    await expect(page.getByText('chat-input-background', { exact: true })).not.toBeVisible()
+    await expect(page.getByText('chat-input-anchor', { exact: true })).toBeVisible()
+    await expect(page.getByText('Please select two elements to compare.')).toBeVisible()
   }
   finally {
     await server.close()

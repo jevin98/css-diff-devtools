@@ -62,6 +62,9 @@
   "removeBtn": {
     "message": "清除选择"
   },
+  "removeSelectedElement": {
+    "message": "删除$1选择"
+  },
   "selectedInfo": {
     "message": "请选择两个元素进行比较。"
   },

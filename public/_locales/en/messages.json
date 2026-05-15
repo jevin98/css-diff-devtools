@@ -62,6 +62,9 @@
   "removeBtn": {
     "message": "Clear Selection"
   },
+  "removeSelectedElement": {
+    "message": "Remove $1 selection"
+  },
   "selectedInfo": {
     "message": "Please select two elements to compare."
   },

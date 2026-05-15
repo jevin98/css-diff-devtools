@@ -32,9 +32,11 @@ export function useDevToolsPanel() {
         `(${formatStyle.toString()})($0)`,
         (result: FormatStyleValue, isException) => {
           if (!isException && result != null && isLoadComplete.value) {
-            const valueType = !selectedEl.length ? 'left' : 'right'
+            const valueType = getAvailableValueType()
 
-            saveSelectedEl({ ...result, valueType })
+            if (valueType) {
+              saveSelectedEl({ ...result, valueType })
+            }
           }
         },
       )
@@ -58,7 +60,7 @@ export function useDevToolsPanel() {
   })
 
   function saveSelectedEl(result: SelectedElType) {
-    if (selectedEl.length === 2) {
+    if (!getAvailableValueType()) {
       return
     }
 
@@ -80,8 +82,43 @@ export function useDevToolsPanel() {
     SM.send([])
   }
 
+  function handleRemoveSelectedElement(valueType: SelectedElType['valueType']) {
+    const index = selectedEl.findIndex(element => element.valueType === valueType)
+
+    if (index === -1) {
+      return
+    }
+
+    selectedEl.splice(index, 1)
+    cssDiffs.length = 0
+
+    // Send selected data to other windows/tabs
+    SM.send(selectedEl)
+  }
+
+  function getAvailableValueType(): SelectedElType['valueType'] | null {
+    if (!selectedEl.some(element => element.valueType === 'left')) {
+      return 'left'
+    }
+
+    if (!selectedEl.some(element => element.valueType === 'right')) {
+      return 'right'
+    }
+
+    return null
+  }
+
   function compareSelectedEl() {
-    const [{ style: styles1 = {} }, { style: styles2 = {} }] = selectedEl
+    const leftElement = selectedEl.find(element => element.valueType === 'left')
+    const rightElement = selectedEl.find(element => element.valueType === 'right')
+
+    if (!leftElement || !rightElement) {
+      cssDiffs.length = 0
+      return
+    }
+
+    const { style: styles1 = {} } = leftElement
+    const { style: styles2 = {} } = rightElement
 
     cssDiffs.length = 0
     cssDiffs.push(...compareStyles(styles1, styles2))
@@ -115,6 +152,7 @@ export function useDevToolsPanel() {
     renderCssDiffs,
     isAllProperty,
     handleClearSelection,
+    handleRemoveSelectedElement,
     handleCopyStyle,
   }
 }

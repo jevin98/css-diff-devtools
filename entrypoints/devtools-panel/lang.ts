@@ -18,6 +18,7 @@ export type MessageKey =
   | 'info'
   | 'removeBtn'
   | 'readyToCompare'
+  | 'removeSelectedElement'
   | 'selectedInfo'
   | 'selection'
   | 'sourceElement'

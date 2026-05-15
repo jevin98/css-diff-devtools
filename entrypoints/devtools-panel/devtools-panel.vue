@@ -32,6 +32,7 @@ const {
   renderCssDiffs,
   isAllProperty,
   handleClearSelection,
+  handleRemoveSelectedElement,
   handleCopyStyle,
 } = useDevToolsPanel()
 
@@ -237,12 +238,25 @@ const PropertyNode = defineComponent({
                 <span class="text-[10px] font-semibold uppercase tracking-normal text-muted-foreground">
                   {{ slot.index }} / {{ slot.title }}
                 </span>
-                <span
-                  class="rounded-full border px-2 py-0.5 text-[10px] font-medium"
-                  :class="slot.element ? 'border-foreground text-foreground' : 'border-border text-muted-foreground'"
-                >
-                  {{ slot.element?.tag || '-' }}
-                </span>
+                <div class="flex shrink-0 items-center gap-1">
+                  <span
+                    class="rounded-full border px-2 py-0.5 text-[10px] font-medium"
+                    :class="slot.element ? 'border-foreground text-foreground' : 'border-border text-muted-foreground'"
+                  >
+                    {{ slot.element?.tag || '-' }}
+                  </span>
+                  <Button
+                    v-if="slot.element"
+                    variant="ghost"
+                    size="icon"
+                    class="h-6 w-6 text-muted-foreground hover:text-foreground"
+                    :aria-label="t('removeSelectedElement', slot.title)"
+                    :title="t('removeSelectedElement', slot.title)"
+                    @click="handleRemoveSelectedElement(slot.element.valueType)"
+                  >
+                    <Trash2 class="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </div>
               <div class="block max-w-full truncate text-sm font-semibold">
                 {{ getElementTitle(slot.element) }}
