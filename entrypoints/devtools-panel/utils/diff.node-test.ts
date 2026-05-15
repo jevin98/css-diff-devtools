@@ -12,18 +12,20 @@ describe('diff utilities', () => {
     assert.match(getDiffValueClass(row, 'right'), /\bbg-red-50\b/)
   })
 
-  it('marks an undefined second value as missing', () => {
+  it('marks a missing first value as a special tag', () => {
     const row = { property: 'gap', left: UNDEFINED_STYLE_VALUE, right: '8px', isDiff: true }
 
-    assert.equal(getDiffValueTone(row, 'left'), 'muted')
+    assert.equal(getDiffValueTone(row, 'left'), 'missing')
     assert.equal(getDiffValueTone(row, 'right'), 'changed')
-    assert.doesNotMatch(getDiffValueClass(row, 'left'), /\bborder-dashed\b/)
+    assert.match(getDiffValueClass(row, 'left'), /\bborder-dashed\b/)
   })
 
   it('marks a missing second value as a special tag', () => {
     const row = { property: 'gap', left: '8px', right: UNDEFINED_STYLE_VALUE, isDiff: true }
 
+    assert.equal(getDiffValueTone(row, 'left'), 'muted')
     assert.equal(getDiffValueTone(row, 'right'), 'missing')
+    assert.doesNotMatch(getDiffValueClass(row, 'left'), /\bborder-dashed\b/)
     assert.match(getDiffValueClass(row, 'right'), /\bborder-dashed\b/)
   })
 

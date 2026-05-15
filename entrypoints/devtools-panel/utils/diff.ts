@@ -5,11 +5,15 @@ export type DiffValueTone = 'changed' | 'missing' | 'muted'
 export const UNDEFINED_STYLE_VALUE = '未定义'
 
 export function getDiffValueTone(row: CssDiffsType, valueType: 'left' | 'right'): DiffValueTone {
-  if (!row.isDiff || valueType === 'left') {
+  if (!row.isDiff) {
     return 'muted'
   }
 
-  return row[valueType] === UNDEFINED_STYLE_VALUE ? 'missing' : 'changed'
+  if (row[valueType] === UNDEFINED_STYLE_VALUE) {
+    return 'missing'
+  }
+
+  return valueType === 'left' ? 'muted' : 'changed'
 }
 
 export function getDiffValueClass(row: CssDiffsType, valueType: 'left' | 'right') {
