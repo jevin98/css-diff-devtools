@@ -109,6 +109,28 @@ function getElementTitle(element?: SelectedElType) {
   return element ? filterJoin(element.tag, element.id, element.class) || element.tag || t('emptyElement') : t('emptyElement')
 }
 
+function getElementTagName(element?: SelectedElType) {
+  return element?.tag ? element.tag.toUpperCase() : '-'
+}
+
+function getElementHeaderLabel(element?: SelectedElType) {
+  if (!element) {
+    return t('emptyElement')
+  }
+
+  if (element.id) {
+    return `#${element.id}`
+  }
+
+  const firstClassName = element.class?.trim().split(/\s+/).find(Boolean)
+
+  if (firstClassName) {
+    return `.${firstClassName}`
+  }
+
+  return getElementTagName(element)
+}
+
 function getElementValue(value?: string) {
   return value || '-'
 }
@@ -364,8 +386,13 @@ const PropertyNode = defineComponent({
                       <div class="text-[10px] uppercase tracking-normal text-muted-foreground">
                         {{ slot.title }}
                       </div>
-                      <div class="truncate text-xs font-semibold text-foreground">
-                        {{ getElementTitle(slot.element) }}
+                      <div class="mt-1 flex min-w-0 items-center gap-2">
+                        <span class="shrink-0 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none text-foreground">
+                          {{ getElementTagName(slot.element) }}
+                        </span>
+                        <span class="truncate text-xs font-semibold text-foreground">
+                          {{ getElementHeaderLabel(slot.element) }}
+                        </span>
                       </div>
                     </div>
                     <Popover>
@@ -400,6 +427,12 @@ const PropertyNode = defineComponent({
                           </dt>
                           <dd class="break-all">
                             {{ getElementValue(slot.element?.class) }}
+                          </dd>
+                          <dt class="text-muted-foreground">
+                            {{ t('fullName') }}
+                          </dt>
+                          <dd class="break-all">
+                            {{ getElementTitle(slot.element) }}
                           </dd>
                         </dl>
                       </PopoverContent>

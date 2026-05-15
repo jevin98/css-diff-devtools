@@ -14,6 +14,7 @@ export type MessageKey =
   | 'elementDetails'
   | 'emptyElement'
   | 'filter'
+  | 'fullName'
   | 'idName'
   | 'info'
   | 'removeBtn'

@@ -38,6 +38,9 @@
   "filter": {
     "message": "Filter"
   },
+  "fullName": {
+    "message": "Full"
+  },
   "changedOnly": {
     "message": "Changed only"
   },

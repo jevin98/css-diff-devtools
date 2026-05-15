@@ -16,6 +16,7 @@ describe('devtools-panel', () => {
       elementDetails: 'Element details',
       emptyElement: 'No element selected',
       filter: 'Filter',
+      fullName: 'Full',
       idName: 'ID',
       info: 'Select two elements in the Elements tab of the DevTools panel and the style differences will be shown below.',
       inputPlaceholder: 'Please enter the css property you want to view',

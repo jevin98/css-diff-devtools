@@ -38,6 +38,9 @@
   "filter": {
     "message": "筛选"
   },
+  "fullName": {
+    "message": "完整名称"
+  },
   "changedOnly": {
     "message": "仅差异"
   },

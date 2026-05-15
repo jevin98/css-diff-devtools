@@ -69,6 +69,7 @@ async function mockExtensionApi(page: Page) {
       elementDetails: 'Element details',
       emptyElement: 'No element selected',
       filter: 'Filter',
+      fullName: 'Full',
       idName: 'ID',
       info: 'Select two elements in the Elements tab of the DevTools panel and the style differences will be shown below.',
       inputPlaceholder: 'Please enter the css property you want to view',
@@ -227,6 +228,54 @@ test('opens the selected element header info popover on click', async ({ page })
 
     await expect(detailsDialog.getByText('Element details')).toBeVisible()
     await expect(detailsDialog.getByText('nav-link', { exact: true })).toBeVisible()
+  }
+  finally {
+    await server.close()
+  }
+})
+
+test('uses compact element names in table headers', async ({ page }) => {
+  test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
+  const server = await serveOutputDir()
+
+  try {
+    await mockExtensionApi(page)
+    await page.goto(server.url)
+
+    await page.evaluate(() => {
+      const selected = [
+        {
+          valueType: 'left',
+          tag: 'div',
+          id: 'main-header',
+          class: 'head_wrapper s-isindex-wrap nologin search-box-new-head-wrapper',
+          style: { color: 'rgb(34, 34, 34)' },
+        },
+        {
+          valueType: 'right',
+          tag: 'div',
+          id: '',
+          class: 's_top_container extra-layout-token',
+          style: { color: 'rgb(0, 0, 0)' },
+        },
+      ]
+
+      ;((window as any).__cssDiffMessageListeners as Array<(data: unknown) => void>)
+        .forEach(callback => callback(selected))
+    })
+
+    const sourceHeader = page.getByRole('columnheader').nth(1)
+    const targetHeader = page.getByRole('columnheader').nth(2)
+
+    await expect(sourceHeader).toContainText('Source')
+    await expect(sourceHeader).toContainText('DIV')
+    await expect(sourceHeader).toContainText('#main-header')
+    await expect(sourceHeader).not.toContainText('head_wrapper s-isindex-wrap nologin search-box-new-head-wrapper')
+
+    await expect(targetHeader).toContainText('Target')
+    await expect(targetHeader).toContainText('DIV')
+    await expect(targetHeader).toContainText('.s_top_container')
+    await expect(targetHeader).not.toContainText('extra-layout-token')
   }
   finally {
     await server.close()
