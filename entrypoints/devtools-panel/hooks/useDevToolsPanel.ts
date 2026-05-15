@@ -56,6 +56,9 @@ export function useDevToolsPanel() {
       if (selectedEl.length === 2) {
         compareSelectedEl()
       }
+      else {
+        cssDiffs.length = 0
+      }
     })
   })
 

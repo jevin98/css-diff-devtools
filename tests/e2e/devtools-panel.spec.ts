@@ -356,6 +356,63 @@ test('removes a single selected element from its selection card', async ({ page 
   }
 })
 
+test('clears stale diffs when synced selection has fewer than two elements', async ({ page }) => {
+  test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
+  const server = await serveOutputDir()
+
+  try {
+    await mockExtensionApi(page)
+    await page.goto(server.url)
+
+    await page.evaluate(() => {
+      const selected = [
+        {
+          valueType: 'left',
+          tag: 'div',
+          id: '',
+          class: 'chat-input-background',
+          style: { color: 'rgb(34, 34, 34)' },
+        },
+        {
+          valueType: 'right',
+          tag: 'div',
+          id: '',
+          class: 'chat-input-anchor',
+          style: { color: 'rgb(0, 0, 0)' },
+        },
+      ]
+
+      ;((window as any).__cssDiffMessageListeners as Array<(data: unknown) => void>)
+        .forEach(callback => callback(selected))
+    })
+
+    await expect(page.getByRole('cell', { name: 'color' })).toBeVisible()
+    await expect(page.getByText('1 property')).toBeVisible()
+
+    await page.evaluate(() => {
+      const selected = [
+        {
+          valueType: 'left',
+          tag: 'div',
+          id: '',
+          class: 'chat-input-background',
+          style: { color: 'rgb(34, 34, 34)' },
+        },
+      ]
+
+      ;((window as any).__cssDiffMessageListeners as Array<(data: unknown) => void>)
+        .forEach(callback => callback(selected))
+    })
+
+    await expect(page.getByText('Please select two elements to compare.')).toBeVisible()
+    await expect(page.getByText('0 property')).toBeVisible()
+    await expect(page.getByRole('cell', { name: 'color' })).not.toBeVisible()
+  }
+  finally {
+    await server.close()
+  }
+})
+
 test('filters property names without adding visual spacing inside the match', async ({ page }) => {
   test.skip(!existsSync(panelPath), 'Run `pnpm build:chrome` before this E2E test.')
   const server = await serveOutputDir()
