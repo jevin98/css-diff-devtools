@@ -44,8 +44,8 @@ const messages = {
 
 export const activeLocale = ref<Locale>('en')
 
-export function initializeLocale(value: string | null, fallback = browser.i18n.getUILanguage()) {
-  activeLocale.value = resolveLocale(value ?? fallback)
+export function initializeLocale(value: string | null) {
+  activeLocale.value = resolveLocale(value)
 }
 
 export function setLocale(value: Locale) {
